@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulse Duplicator Manager</title>
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="/eel.js"></script> 
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
 
 <body>
@@ -39,11 +40,13 @@
         <button onclick="toggle_LED(18)"> Toggle LED 2</button>
     </div>
 
-    <div id="waveform" style="display: none;">
+    <div id="waveform" style="display: block;">
         <h2>Waveform manager</h2>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>        
     <div>
 </body>
 
 <script src="main.js"></script>
-
 </html>

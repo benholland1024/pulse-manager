@@ -5,6 +5,7 @@ function reactive_update(from, to) {
     document.getElementById(to).value = new_val;
 }
 
+//  Test function to toggle LEDs.
 function toggle_LED(pin_num) {
     eel.toggle_LED(pin_num);
 }
@@ -17,8 +18,36 @@ function change_mode(new_mode) {
     document.getElementById(new_mode + '-btn').classList.add('active');
     document.getElementById(new_mode).style.display = "block";
     current_mode = new_mode;
+    if (current_mode == "waveform") { 
+        draw_graph(); 
+    }
 }
 
+//
+function draw_graph() {
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+draw_graph();
+
+//  Example of how to expose JS functions to Python
 eel.expose(prompt_alerts);
 function prompt_alerts(description) {
   alert(description);

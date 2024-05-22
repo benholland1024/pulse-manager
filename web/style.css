@@ -48,3 +48,11 @@ body {
     background-color: #555;
     color: white;
 }
+
+
+/* Style the chart canvas */
+#graph-container {
+  display: block;
+  width: 600px;
+  height: 300px;
+}

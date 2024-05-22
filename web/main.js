@@ -1,51 +1,81 @@
 //  Implements "reactive data!"
 //    For example, when a slider updates, the text input updates too, and vice versa.
 function reactive_update(from, to) {
-    let new_val = document.getElementById(from).value;
-    document.getElementById(to).value = new_val;
+  let new_val = document.getElementById(from).value;
+  document.getElementById(to).value = new_val;
 }
 
 //  Test function to toggle LEDs.
 function toggle_LED(pin_num) {
-    eel.toggle_LED(pin_num);
+  eel.toggle_LED(pin_num);
 }
 
 //  Changes the mode (this toggles between two UI interfaces)
 let current_mode = 'manual';
 function change_mode(new_mode) {
-    document.getElementById(current_mode + '-btn').classList.remove('active');
-    document.getElementById(current_mode).style.display = "none";
-    document.getElementById(new_mode + '-btn').classList.add('active');
-    document.getElementById(new_mode).style.display = "block";
-    current_mode = new_mode;
-    if (current_mode == "waveform") { 
-        draw_graph(); 
-    }
+  document.getElementById(current_mode + '-btn').classList.remove('active');
+  document.getElementById(current_mode).style.display = "none";
+  document.getElementById(new_mode + '-btn').classList.add('active');
+  document.getElementById(new_mode).style.display = "block";
+  current_mode = new_mode;
+  if (current_mode == "waveform") { 
+    draw_graph(); 
+  }
 }
 
 //
 function draw_graph() {
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+  console.log("Called");
+  var xValues = [];
+  var yValues = [];
+  generateData("80 + (Math.sin(x)*50)", 0, 10, 0.5);
+
+  new Chart("pulse-graph", {
+    type: "line",
+    data: {
+      labels: xValues,
+      datasets: [{
+        fill: false,
+        pointRadius: 2,
+        borderColor: "rgba(200,0,255,0.5)",
+        data: yValues
+      }]
+    },
+    options: {
+      legend: {display: false},
+      title: {
+        display: true,
+        text: "y = sin(x)",
+        fontSize: 16
+      },
+      scales: {
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Pressure (mmHg)'
+          }
+        }],
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (s)'
+          }
+        }]
+      }
+    }
+  });
+  function generateData(value, i1, i2, step = 1) {
+    for (let x = i1; x <= i2; x += step) {
+      let y_val = eval(value);
+      if (y_val < 80) {
+        y_val = 80;
+      }
+      yValues.push(y_val);
+      xValues.push(x);
+    }
+  }
 }
-draw_graph();
+//draw_graph();
 
 //  Example of how to expose JS functions to Python
 eel.expose(prompt_alerts);

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse Duplicator Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="/eel.js"></script> 
+</head>
+
+<body>
+    <div class="topnav">
+        <a class="active" id="manual-btn" onclick="change_mode('manual')">Manual testing</a>
+        <a id="waveform-btn" onclick="change_mode('waveform')">Waveform manager</a>
+    </div>
+ 
+    <div id="manual">
+        <h2>Manual testing</h2>
+        <p class="input-container">
+            Open inflow valve 
+            <span>
+                <input type="range" min="0" max="100" id="inflow_r" 
+                    oninput="reactive_update('inflow_r', 'inflow_n')"/>
+                <input type="number" min="0" max="100" id="inflow_n" 
+                    oninput="reactive_update('inflow_n', 'inflow_r')"/>
+            </span>
+        </p>
+        <p class="input-container">
+            Open outflow valve
+            <span>
+                <input type="range" min="0" max="100" id="outflow_r"
+                    oninput="reactive_update('outflow_r', 'outflow_n')"/>
+                <input type="number" min="0" max="100" id="outflow_n"
+                    oninput="reactive_update('outflow_n', 'outflow_r')"/>
+            </span>
+        </p>
+        <button onclick="toggle_LED(17)"> Toggle LED 1</button>
+        <button onclick="toggle_LED(18)"> Toggle LED 2</button>
+    </div>
+
+    <div id="waveform" style="display: none;">
+        <h2>Waveform manager</h2>
+    <div>
+</body>
+
+<script src="main.js"></script>
+
+</html>

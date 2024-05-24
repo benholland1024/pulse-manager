@@ -1,3 +1,10 @@
+
+function boot() {
+  reactive_update('inflow_r','inflow_n');
+  reactive_update('inflow_n','inflow_r');
+}
+boot();
+
 //  Implements "reactive data!"
 //    For example, when a slider updates, the text input updates too, and vice versa.
 function reactive_update(from, to) {

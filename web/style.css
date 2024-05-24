@@ -7,7 +7,7 @@ body {
   padding: 0px;
   font-family: sans-serif;
   color: white;
-  background: #555
+  background: #444
 }
 
 /* The content in the manual testing section */
@@ -24,7 +24,21 @@ body {
 }
 
 button, input {
-  
+  background: #666;
+  padding: 5px 10px; 
+  border: none;
+  outline: none; 
+  color: white;
+}
+button {
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px black;
+}
+input {
+  border: solid 1px black;
+}
+input:active, input:focus {
+  border: solid 1px #777;
 }
 
 

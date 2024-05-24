@@ -30,6 +30,9 @@ function draw_graph() {
   var yValues = [];
   generateData("80 + (Math.sin(x)*50)", 0, 10, 0.5);
 
+  let fontColor = 'white';
+  let gridlineColor = '#333';
+
   new Chart("pulse-graph", {
     type: "line",
     data: {
@@ -37,7 +40,7 @@ function draw_graph() {
       datasets: [{
         fill: false,
         pointRadius: 2,
-        borderColor: "rgba(200,0,255,0.5)",
+        borderColor: "rgba(255,200,200,1)",
         data: yValues
       }]
     },
@@ -45,20 +48,22 @@ function draw_graph() {
       legend: {display: false},
       title: {
         display: true,
-        text: "y = sin(x)",
-        fontSize: 16
+        text: "Current waveform:",
+        fontSize: 16,
+        fontColor: fontColor,
       },
       scales: {
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: 'Pressure (mmHg)'
+            labelString: 'Pressure (mmHg)',
+            fontColor: fontColor
           }
         }],
         xAxes: [{
           scaleLabel: {
             display: true,
-            labelString: 'Time (s)'
+            labelString: 'Time (s)',
           }
         }]
       }

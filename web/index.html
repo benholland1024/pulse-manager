@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <script type="text/javascript" src="/eel.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -54,10 +55,19 @@
     <p class="input-container">
       Heart rate: 
       <span>
-        <input type="number" min="40" max="300" id="heart_rate" 
-          oninput="reactive_update('heart_rate')" value="90"/>
+        <input type="range" min="0" max="100" id="bpm_r"
+          oninput="reactive_update('bpm_r', 'bpm_n')"/>
+        <input type="number" min="40" max="300" id="bpm_n" 
+          oninput="reactive_update('bpm_n', 'bpm_r')" value="90"/>
     		BPM
       </span>
+    </p>
+
+    <!--  Heart rate stats (period and Hz)  -->
+    <p id="heart-rate-stats">
+      <span>Wave period: <span id="period"></span>s</span>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span>Wave freq. in Hz: <span id="hz"></span>beats/s</span>
     </p>
 
     <!--  Diastole pressure input -->

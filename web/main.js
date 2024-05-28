@@ -1,15 +1,28 @@
 
+
+//  Implements "reactive data!"
+//    For example, when a slider updates, the text input updates too, and vice versa.
+const pubsub = {
+  events: {},
+  subscribe(event, callback) {
+    if (!this.events[event]) this.events[event] = [];
+    this.events[event].push(callback);
+  },
+  publish(event, data) {
+    if (this.events[event]) this.events[event].forEach(function(callback) { callback(data) });
+  }
+};
+
 function boot() {
   reactive_update('inflow_r','inflow_n');
   reactive_update('outflow_r','outflow_n');
 }
 boot();
 
-//  Implements "reactive data!"
-//    For example, when a slider updates, the text input updates too, and vice versa.
+
 function reactive_update(from, to) {
-  let new_val = document.getElementById(from).value;
-  document.getElementById(to).value = new_val;
+  let new_val = $(`#${from}`).val();
+  $('#' + to).attr('value', new_val);
 }
 
 //  Test function to toggle LEDs.
@@ -25,9 +38,9 @@ function change_mode(new_mode) {
   document.getElementById(new_mode + '-btn').classList.add('active');
   document.getElementById(new_mode).style.display = "block";
   current_mode = new_mode;
-  if (current_mode == "waveform") { 
+  if (current_mode == "waveform") {
     draw_graph();
-    draw_waveform(); 
+    draw_waveform();
   }
 }
 
@@ -56,8 +69,10 @@ function get_xValues() {
   xValues = [];
   //  beats/min * 1min/60sec = beats/sec = hz
   let hz = bpm / 60;
+  document.getElementById('hz').innerHTML = Math.round(hz * 1000) / 1000;
   //  period T = 1 / f
   let period = 1 / hz;
+  document.getElementById('period').innerHTML = period;
   let x_max = 2 * period;
   //  The steps are each 1/40th of a second
   let x_range = Math.floor(x_max);
@@ -82,6 +97,8 @@ function get_yValue(i) {
   let yrange = systole - diastole;
    //  4 Pi because we want 2 wavelengths.
   let value = diastole + ( Math.sin(i * 4 * Math.PI / xrange ) * yrange );
+  if (value < diastole)
+    value = diastole;
   return value;
 }
 

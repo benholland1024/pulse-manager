@@ -2,74 +2,96 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pulse Duplicator Manager</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="/eel.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Duplicator Manager</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="/eel.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
 
 <body>
-    <div class="topnav">
-        <a class="active" id="manual-btn" onclick="change_mode('manual')">Manual testing</a>
-        <a id="waveform-btn" onclick="change_mode('waveform')">Waveform manager</a>
-    </div>
- 
-    <div id="manual">
-        <h2>Manual testing</h2>
-        <p class="input-container">
-            Open inflow valve 
-            <span>
-                <input type="range" min="0" max="100" id="inflow_r" 
-                    oninput="reactive_update('inflow_r', 'inflow_n')"/>
-                <input type="number" min="0" max="100" id="inflow_n" 
-                    oninput="reactive_update('inflow_n', 'inflow_r')"/>
-            </span>
-        </p>
-        <p class="input-container">
-            Open outflow valve
-            <span>
-                <input type="range" min="0" max="100" id="outflow_r"
-                    oninput="reactive_update('outflow_r', 'outflow_n')"/>
-                <input type="number" min="0" max="100" id="outflow_n"
-                    oninput="reactive_update('outflow_n', 'outflow_r')"/>
-            </span>
-        </p>
-        <button onclick="toggle_LED(17)"> Toggle LED 1</button>
-        <button onclick="toggle_LED(18)"> Toggle LED 2</button>
-    </div>
+  <div class="topnav">
+    <a class="active" id="manual-btn" onclick="change_mode('manual')">Manual testing</a>
+    <a id="waveform-btn" onclick="change_mode('waveform')">Waveform manager</a>
+  </div>
 
-    <div id="waveform" style="display: none;">
-        <h2>Waveform manager</h2>
-        <p class="input-container">
-            Heart rate: 
-            <span>
-                <input type="number" min="40" max="300" id="heart_rate" 
-                    oninput="reactive_update('heart_rate')" value="90"/>
-		BPM
-            </span>
-        </p>
-        <p class="input-container">
-            Diastole pressure:
-            <span>
-                <input type="number" min="40" max="150" id="diastole" 
-                    oninput="reactive_update('diastole')" value="80"/>
-		mmHg
-            </span>
-        </p>
-        <p class="input-container">
-            Systole pressure:
-            <span>
-                <input type="number" min="70" max="300" id="systole" 
-                    oninput="reactive_update('systole')" value="120"/>
-		mmHg
-            </span>
-        </p>
-        <div id="graph-container">
-            <canvas id="pulse-graph"></canvas>
-        </div>        
-    <div>
+  <!--                            -->
+  <!--  MANUAL TESTING INTERFACE  --> 
+  <!--                            -->
+  <div id="manual">
+    <h2>Manual testing</h2>
+    <p class="input-container">
+      Open inflow valve 
+      <span>
+        <input type="range" min="0" max="100" id="inflow_r" 
+          oninput="reactive_update('inflow_r', 'inflow_n')"/>
+        <input type="number" min="0" max="100" id="inflow_n" 
+          oninput="reactive_update('inflow_n', 'inflow_r')"/>
+      </span>
+    </p>
+    <p class="input-container">
+      Open outflow valve
+      <span>
+        <input type="range" min="0" max="100" id="outflow_r"
+          oninput="reactive_update('outflow_r', 'outflow_n')"/>
+        <input type="number" min="0" max="100" id="outflow_n"
+          oninput="reactive_update('outflow_n', 'outflow_r')"/>
+      </span>
+    </p>
+    <button onclick="toggle_LED(17)"> Toggle LED 1</button>
+    <button onclick="toggle_LED(18)"> Toggle LED 2</button>
+  </div>
+
+  <!--                             -->
+  <!--  WAVEFORM TESTING INTERFACE -->
+  <!--                             -->
+  <div id="waveform" style="display: none;">
+
+    <h2>Waveform manager</h2>
+
+    <!--  Heart rate input -->
+    <p class="input-container">
+      Heart rate: 
+      <span>
+        <input type="number" min="40" max="300" id="heart_rate" 
+          oninput="reactive_update('heart_rate')" value="90"/>
+    		BPM
+      </span>
+    </p>
+
+    <!--  Diastole pressure input -->
+    <p class="input-container">
+      Diastole pressure:
+      <span>
+        <input type="number" min="40" max="150" id="diastole" 
+          oninput="reactive_update('diastole')" value="80"/>
+    		mmHg
+      </span>
+    </p>
+
+    <!--  Systole pressure input  -->
+    <p class="input-container">
+      Systole pressure:
+      <span>
+        <input type="number" min="70" max="300" id="systole" 
+          oninput="reactive_update('systole')" value="120"/>
+		    mmHg
+      </span>
+    </p>
+
+    <!--  Button to toggle pulse  -->
+    <p>
+      <button onclick="start_pulse()" id="start-pulse"> &#9654; Start pulse</button>
+      <button onclick="stop_pulse()" id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
+    </p>
+
+    <!--  Waveform graph  -->
+    <div id="graph-container">
+      <canvas id="pulse-graph"></canvas>
+    </div>      
+
+  <div>
 </body>
 
 <script src="main.js"></script>

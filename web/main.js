@@ -1,7 +1,7 @@
 
 function boot() {
   reactive_update('inflow_r','inflow_n');
-  reactive_update('inflow_n','inflow_r');
+  reactive_update('outflow_r','outflow_n');
 }
 boot();
 
@@ -26,28 +26,120 @@ function change_mode(new_mode) {
   document.getElementById(new_mode).style.display = "block";
   current_mode = new_mode;
   if (current_mode == "waveform") { 
-    draw_graph(); 
+    draw_graph();
+    draw_waveform(); 
   }
+}
+
+//     ###     ###                 ###     ###
+//    #   #   #    Graph functions    #   #   #
+// ###     ###                         ###     ###
+
+// The user changes these directly:
+let bpm = 100;          //  Beats per minute
+let diastole = 80;      //  Pressure at diastole in mmHg
+let systole = 120;      //  Pressure at systole
+
+//  Used by functions:
+let xValues = [];       //  A list of each x value plotted
+let yValues = [];       //  y value list, the same size as xValues
+let pulse_i = 0;        //  Which x value is the pulse on?
+let chart = undefined;  //  The chart. Populated in draw_chart()
+let pulse_loop;         //  Starts & stops the pulse loop
+
+//  Change these to edit the software:
+const label_step = .5;  //  Which x labels should be shown? MUST be multiple of step_size
+const step_size = .025; //  The interval between graph points
+
+//  Fill the list of xValues, based on bpm
+function get_xValues() {
+  xValues = [];
+  //  beats/min * 1min/60sec = beats/sec = hz
+  let hz = bpm / 60;
+  //  period T = 1 / f
+  let period = 1 / hz;
+  let x_max = 2 * period;
+  //  The steps are each 1/40th of a second
+  let x_range = Math.floor(x_max);
+  for (let i = 0; i < x_max + (step_size * 2); i += step_size) {
+    xValues.push(i);
+  }
+}
+
+//  Fill the list of yValues
+function get_yValues() {
+  yValues = [];
+  let xrange = xValues.length - 1;
+  for (let i = 0; i < xrange; i++) {
+    let value = get_yValue(i);
+    yValues.push(value);
+  }
+}
+
+//  Get an individual y value. Needed for pulse drawing
+function get_yValue(i) {
+  let xrange = xValues.length - 1;
+  let yrange = systole - diastole;
+   //  4 Pi because we want 2 wavelengths.
+  let value = diastole + ( Math.sin(i * 4 * Math.PI / xrange ) * yrange );
+  return value;
+}
+
+//  Draw the waveform, with no changes
+function draw_waveform() {
+  get_yValues();
+  chart.data.datasets[0].data = yValues;
+  chart.update();
+}
+
+//  Trigged by "start pulse" button
+function start_pulse() {
+  yValues = [];
+  draw_graph();
+  pulse_loop = setInterval(pulse_step, step_size * 1000);
+  document.getElementById('stop-pulse').style.display = 'block';
+  document.getElementById('start-pulse').style.display = 'none';
+}
+
+//  Runs every few milliseconds after "start_pulse()"
+function pulse_step() {
+  let value = get_yValue(pulse_i);
+  chart.data.datasets[0].data.push(value);
+  chart.update();
+  if (pulse_i < xValues.length - 1) {
+    pulse_i++;
+  } else {
+    yValues = [];
+    chart.data.datasets[0].data = yValues;
+    pulse_i = 0;
+    chart.update(step_size);
+  }
+}
+
+//  Stops the pulse loop
+function stop_pulse() {
+  clearInterval(pulse_loop);
+  pulse_i = 0;
+  draw_waveform();
+  document.getElementById('start-pulse').style.display = 'block';
+  document.getElementById('stop-pulse').style.display = 'none';
 }
 
 //
 function draw_graph() {
-  console.log("Called");
-  var xValues = [];
-  var yValues = [];
-  generateData("80 + (Math.sin(x)*50)", 0, 10, 0.5);
+  get_xValues();
 
   let fontColor = 'white';
   let gridlineColor = '#333';
 
-  new Chart("pulse-graph", {
+  chart = new Chart("pulse-graph", {
     type: "line",
     data: {
       labels: xValues,
       datasets: [{
         fill: false,
         pointRadius: 2,
-        borderColor: "rgba(255,200,200,1)",
+        borderColor: "rgba(255,100,100,1)",
         data: yValues
       }]
     },
@@ -65,29 +157,58 @@ function draw_graph() {
             display: true,
             labelString: 'Pressure (mmHg)',
             fontColor: fontColor
+          },
+          ticks: {
+            fontColor: fontColor,
+            suggestedMin: 0,
+            suggestedMax: 200
           }
         }],
         xAxes: [{
           scaleLabel: {
             display: true,
             labelString: 'Time (s)',
+            fontColor: fontColor
+          },
+          ticks: {
+            fontColor: fontColor,
+            //  This hides unlabelled x-values. See const label_step
+            callback: function(value, index, values) {
+              let scaled_step = label_step * 1000;
+              if (Math.round(value * 1000) % scaled_step == 0) {
+                return Math.round(value * 1000) / 1000;
+              } else {
+                return null;
+              }
+            }
           }
+
         }]
       }
     }
   });
-  function generateData(value, i1, i2, step = 1) {
-    for (let x = i1; x <= i2; x += step) {
-      let y_val = eval(value);
-      if (y_val < 80) {
-        y_val = 80;
-      }
-      yValues.push(y_val);
-      xValues.push(x);
-    }
-  }
 }
 //draw_graph();
+
+/*
+  When the chart first loads, it shows the waveform,
+    without pulsing. The heart is at diastole.
+
+  The range of x values scales with the bpm, to show
+    two waves. For 100bpm (1.67Hz), T = 1/1.67 = .60s,
+    thus the x values are 0 to (2*0.60), or 0 to 1.2s.
+
+  The amount each x value steps is such that:
+    1. Each wave is shown by at least 20 values
+    2. There is a step for each round second value
+
+  The range of y values scales between diastole and
+    systole. Systole must be higher than diastole.
+
+  When the pulse starts, the x values remain the same,
+    but the y values are added 1 by 1 over time.
+*/
+
 
 //  Example of how to expose JS functions to Python
 eel.expose(prompt_alerts);

@@ -1,7 +1,8 @@
 
 
-//  Implements "reactive data!"
+//  Implements "reactive data"!  A pattern seen in all modern JS frameworks
 //    For example, when a slider updates, the text input updates too, and vice versa.
+//    Adapted from frontendmasters.com/blog/vanilla-javascript-reactivity.
 const pubsub = {
   events: {},
   subscribe(event, callback) {
@@ -14,8 +15,18 @@ const pubsub = {
 };
 
 function boot() {
-  reactive_update('inflow_r','inflow_n');
-  reactive_update('outflow_r','outflow_n');
+  //reactive_update('inflow_r','inflow_n');
+  //reactive_update('outflow_r','outflow_n');
+  pubsub.subscribe('inflow', function(new_data) {
+    $('#inflow_n').attr('value', new_data);
+    $('#inflow_r').attr('value', new_data);
+  });
+  pubsub.publish( 'inflow', $('#inflow_r').val() );
+  pubsub.subscribe('outflow', function(new_data) {
+    $('#outflow_n').attr('value', new_data);
+    $('#outflow_r').attr('value', new_data);
+  });
+  pubsub.publish( 'outflow', $('#outflow_r').val() );
 }
 boot();
 

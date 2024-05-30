@@ -26,6 +26,7 @@
       Open inflow valve 
       <span>
         <input type="range" min="0" max="100" id="inflow_r" 
+          oninput="pubsub.publish('inflow', this.value)"
           oninput="reactive_update('inflow_r', 'inflow_n')"/>
         <input type="number" min="0" max="100" id="inflow_n" 
           oninput="reactive_update('inflow_n', 'inflow_r')"/>

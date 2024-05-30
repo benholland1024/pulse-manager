@@ -14,6 +14,7 @@ const pubsub = {
   }
 };
 
+//  Called when the page loads.
 function boot() {
   //reactive_update('inflow_r','inflow_n');
   //reactive_update('outflow_r','outflow_n');
@@ -30,7 +31,7 @@ function boot() {
 }
 boot();
 
-
+//  No longer used
 function reactive_update(from, to) {
   let new_val = $(`#${from}`).val();
   $('#' + to).attr('value', new_val);
@@ -66,7 +67,8 @@ let systole = 120;      //  Pressure at systole
 
 //  Used by functions:
 let xValues = [];       //  A list of each x value plotted
-let yValues = [];       //  y value list, the same size as xValues
+let ap = [];       //  y value list, the same size as xValues
+let vp = []
 let pulse_i = 0;        //  Which x value is the pulse on?
 let chart = undefined;  //  The chart. Populated in draw_chart()
 let pulse_loop;         //  Starts & stops the pulse loop
@@ -92,56 +94,82 @@ function get_xValues() {
   }
 }
 
-//  Fill the list of yValues
-function get_yValues() {
-  yValues = [];
+//  Get all atrial pressures
+function get_ap_all() {
+  ap = [];
   let xrange = xValues.length - 1;
   for (let i = 0; i < xrange; i++) {
-    let value = get_yValue(i);
-    yValues.push(value);
+    let value = get_ap_value(i);
+    ap.push(value);
   }
 }
 
 //  Get an individual y value. Needed for pulse drawing
-function get_yValue(i) {
+function get_ap_value(i) {
   let xrange = xValues.length - 1;
   let yrange = systole - diastole;
    //  4 Pi because we want 2 wavelengths.
-  let value = diastole + ( Math.sin(i * 4 * Math.PI / xrange ) * yrange );
+  let value = diastole + ( yrange * Math.sin(i * 4 * Math.PI / xrange ) );
   if (value < diastole)
     value = diastole;
   return value;
 }
 
+//  Get left ventrical pressure
+function get_vp_all() {
+  vp = []
+  let xrange = xValues.length - 1;
+  for (let i = 0; i < xrange; i++) {
+    let value = get_vp_value(i);
+    vp.push(value);
+  }
+}
+
+//
+function get_vp_value(i) {
+  let xrange = xValues.length - 1;
+  let yrange = systole - diastole;
+   //  4 Pi because we want 2 wavelengths.
+  let value = ( systole * Math.sin(i * 4 * Math.PI / xrange ) );
+  if (value < 0)
+    value = 0;
+  return value;
+}
+
 //  Draw the waveform, with no changes
 function draw_waveform() {
-  get_yValues();
-  chart.data.datasets[0].data = yValues;
+  get_ap_all();
+  get_vp_all();
+  chart.data.datasets[0].data = ap;
+  chart.data.datasets[1].data = vp;
   chart.update();
 }
 
 //  Trigged by "start pulse" button
 function start_pulse() {
-  yValues = [];
+  ap = [];
+  vp = [];
   draw_graph();
   pulse_loop = setInterval(pulse_step, step_size * 1000);
-  document.getElementById('stop-pulse').style.display = 'block';
-  document.getElementById('start-pulse').style.display = 'none';
+  $('#stop-pulse').css('display', 'block');
+  $('#start-pulse').css('display', 'none');
+  eel.start_PWM(12);
 }
 
 //  Runs every few milliseconds after "start_pulse()"
 function pulse_step() {
-  let value = get_yValue(pulse_i);
-  chart.data.datasets[0].data.push(value);
-  chart.update();
+  chart.data.datasets[0].data.push( get_ap_value( pulse_i ) );
+  chart.data.datasets[1].data.push( get_vp_value( pulse_i ) );
   if (pulse_i < xValues.length - 1) {
     pulse_i++;
   } else {
-    yValues = [];
-    chart.data.datasets[0].data = yValues;
+    ap = [];
+    vp = [];
+    chart.data.datasets[0].data = ap;
+    chart.data.datasets[1].data = vp;
     pulse_i = 0;
-    chart.update(step_size);
   }
+  chart.update();
 }
 
 //  Stops the pulse loop
@@ -149,8 +177,9 @@ function stop_pulse() {
   clearInterval(pulse_loop);
   pulse_i = 0;
   draw_waveform();
-  document.getElementById('start-pulse').style.display = 'block';
-  document.getElementById('stop-pulse').style.display = 'none';
+  $('#start-pulse').css('display', 'block');
+  $('#stop-pulse').css('display','none');
+  eel.stop_PWM(12);
 }
 
 //
@@ -168,11 +197,24 @@ function draw_graph() {
         fill: false,
         pointRadius: 2,
         borderColor: "rgba(255,100,100,1)",
-        data: yValues
+        label: 'Aortic pressure (AP)',
+        showLine: false,
+        data: ap
+      }, {
+        fill: false,
+        pointRadius: 2,
+        borderColor: "rgba(180,100,200,1)",
+        label: 'Ventricular pressure (VP)',
+        data: vp
       }]
     },
     options: {
-      legend: {display: false},
+      legend: {
+        display: true,
+        labels: {
+          fontColor: fontColor
+        }
+      },
       title: {
         display: true,
         text: "Current waveform:",
@@ -183,7 +225,7 @@ function draw_graph() {
         yAxes: [{
           scaleLabel: {
             display: true,
-            labelString: 'Pressure (mmHg)',
+               labelString: 'Pressure (mmHg)',
             fontColor: fontColor
           },
           ticks: {

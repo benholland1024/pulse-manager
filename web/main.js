@@ -1,4 +1,4 @@
-
+//  main.js  --  This file runs when the app loads.
 
 //  Implements "reactive data"!  A pattern seen in all modern JS frameworks
 //    For example, when a slider updates, the text input updates too, and vice versa.
@@ -16,9 +16,7 @@ const pubsub = {
 
 //  Called when the page loads.
 function boot() {
-  //reactive_update('inflow_r','inflow_n');
-  //reactive_update('outflow_r','outflow_n');
-  pubsub.subscribe('inflow', function(new_data) {
+  pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
     $('#inflow_n').attr('value', new_data);
     $('#inflow_r').attr('value', new_data);
   });
@@ -30,12 +28,6 @@ function boot() {
   pubsub.publish( 'outflow', $('#outflow_r').val() );
 }
 boot();
-
-//  No longer used
-function reactive_update(from, to) {
-  let new_val = $(`#${from}`).val();
-  $('#' + to).attr('value', new_val);
-}
 
 //  Test function to toggle LEDs.
 function toggle_LED(pin_num) {
@@ -280,7 +272,7 @@ function draw_graph() {
 */
 
 
-//  Example of how to expose JS functions to Python
+//  Example of how to expose JS functions to Python (not used
 eel.expose(prompt_alerts);
 function prompt_alerts(description) {
   alert(description);

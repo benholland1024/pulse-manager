@@ -1,3 +1,4 @@
+  
 import eel                  # Eel connects js with py
 from gpiozero import LED    # Simple LED on/off lib
 from time import sleep      # Timing of LEDs
@@ -7,26 +8,36 @@ import threading            # For interrupts
 eel.init('web')
 
 leds = {          # LED variables for GPIO pin numbers (not board numbers) for LED library
-    13: LED(13),  # Blue
-    17: LED(17),
-    18: LED(18)   # Red
+  "red": {
+    "board": 32,
+    "gpio": 12,
+    "led": LED(12)
+  },
+  "blue": {
+    "board": 33,
+    "gpio": 13,
+    "led": LED(13)
+  }
 }
-pwm = False
+pwm = True
                   # These are labelled by BOARD pin #'s (not GPIO numbers) for pwm
-INFLOW_PIN = 13   # BLUE (based on current hardware
-OUTFLOW_PIN = 18  # RED
+INFLOW_PIN = 32   # RED (based on current hardware)
+OUTFLOW_PIN = 33  # BLUE
 
 
 @eel.expose
-def toggle_LED(pin_num):
-    leds[pin_num].toggle()
-    print("Toggled pin " + str(pin_num))
+def toggle_LED(color):
+  led = leds[color]['led']
+  led.toggle()
+  sleep(1)
+  #LED(pin_num).toggle()
+  print("Toggled " + color + " pin")
 
 #  Make LEDs pulse from dim to fully lit, using PWM
 @eel.expose
 def start_PWM(period):
   print('Starting pwm')
-  GPIO.setwarnings(True)
+  GPIO.setwarnings(False)
   GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
 
   # Set up inflow pin
@@ -57,8 +68,8 @@ def stop_PWM(pin_num):  #  This function doesn't stop the pwm, it needs multithr
 
 def on_close(url, open_websockets):
   print("Bye!")
-  GPIO.cleanup()
   if not open_websockets:
+    GPIO.cleanup()
     exit()
 
 eel.start('index.html', close_callback=on_close)

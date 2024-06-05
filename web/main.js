@@ -16,16 +16,48 @@ const pubsub = {
 
 //  Called when the page loads.
 function boot() {
+	console.log('Pulse manager loaded! Hello! <3');
+
+	//  All these are setting up reactive data!
   pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
-    $('#inflow_n').attr('value', new_data);
-    $('#inflow_r').attr('value', new_data);
+    console.log('inflow updated');
+    $('#inflow_n').val(new_data);
+    $('#inflow_r').val(new_data);
   });
   pubsub.publish( 'inflow', $('#inflow_r').val() );
+
+  //  Reactive outflow
   pubsub.subscribe('outflow', function(new_data) {
-    $('#outflow_n').attr('value', new_data);
-    $('#outflow_r').attr('value', new_data);
+    $('#outflow_n').val(new_data);
+    $('#outflow_r').val(new_data);
   });
   pubsub.publish( 'outflow', $('#outflow_r').val() );
+
+  //  Reactive bpm
+  pubsub.subscribe('bpm', function(new_data) {
+    $('#bpm_n').val(new_data);
+    $('#bpm_r').val(new_data);
+	  let hz = Math.round(new_data * 100 / 60) / 100;
+		$('#hz_n').val(hz);
+		$('#hz_r').val(hz);
+		let period = Math.round(100 / hz) / 100;
+		$('#period_n').val(period);
+		$('#period_r').val(period);
+	});
+	pubsub.publish( 'bpm', $('#bpm_r').val() );
+
+  //  Reactive diastole
+  pubsub.subscribe('diastole', function(new_data) {
+    $('#diastole_n').val(new_data);
+    $('#diastole_r').val(new_data);
+  });
+
+  //  Reactive systole
+  pubsub.subscribe('systole', function(new_data) {
+    $('#systole_n').val(new_data);
+    $('#systole_r').val(new_data);
+  });
+
 }
 boot();
 
@@ -72,12 +104,8 @@ const step_size = .025; //  The interval between graph points
 //  Fill the list of xValues, based on bpm
 function get_xValues() {
   xValues = [];
-  //  beats/min * 1min/60sec = beats/sec = hz
-  let hz = bpm / 60;
-  document.getElementById('hz').innerHTML = Math.round(hz * 1000) / 1000;
-  //  period T = 1 / f
-  let period = 1 / hz;
-  document.getElementById('period').innerHTML = period;
+  let hz = bpm / 60;    //  Because b/m * 1min/60sec == b/s == hz
+  let period = 1 / hz;  //  Because period T = 1 / f
   let x_max = 2 * period;
   //  The steps are each 1/40th of a second
   let x_range = Math.floor(x_max);
@@ -250,19 +278,17 @@ function draw_graph() {
     }
   });
 }
-//draw_graph();
+
 
 /*
+                ~ ~ ~  NOTES:  ~ ~ ~
+
   When the chart first loads, it shows the waveform,
     without pulsing. The heart is at diastole.
 
   The range of x values scales with the bpm, to show
     two waves. For 100bpm (1.67Hz), T = 1/1.67 = .60s,
     thus the x values are 0 to (2*0.60), or 0 to 1.2s.
-
-  The amount each x value steps is such that:
-    1. Each wave is shown by at least 20 values
-    2. There is a step for each round second value
 
   The range of y values scales between diastole and
     systole. Systole must be higher than diastole.

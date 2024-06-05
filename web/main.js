@@ -1,65 +1,5 @@
 //  main.js  --  This file runs when the app loads.
 
-//  Implements "reactive data"!  A pattern seen in all modern JS frameworks
-//    For example, when a slider updates, the text input updates too, and vice versa.
-//    Adapted from frontendmasters.com/blog/vanilla-javascript-reactivity.
-const pubsub = {
-  events: {},
-  subscribe(event, callback) {
-    if (!this.events[event]) this.events[event] = [];
-    this.events[event].push(callback);
-  },
-  publish(event, data) {
-    if (this.events[event]) this.events[event].forEach(function(callback) { callback(data) });
-  }
-};
-
-//  Called when the page loads.
-function boot() {
-	console.log('Pulse manager loaded! Hello! <3');
-
-	//  All these are setting up reactive data!
-  pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
-    console.log('inflow updated');
-    $('#inflow_n').val(new_data);
-    $('#inflow_r').val(new_data);
-  });
-  pubsub.publish( 'inflow', $('#inflow_r').val() );
-
-  //  Reactive outflow
-  pubsub.subscribe('outflow', function(new_data) {
-    $('#outflow_n').val(new_data);
-    $('#outflow_r').val(new_data);
-  });
-  pubsub.publish( 'outflow', $('#outflow_r').val() );
-
-  //  Reactive bpm
-  pubsub.subscribe('bpm', function(new_data) {
-    $('#bpm_n').val(new_data);
-    $('#bpm_r').val(new_data);
-	  let hz = Math.round(new_data * 100 / 60) / 100;
-		$('#hz_n').val(hz);
-		$('#hz_r').val(hz);
-		let period = Math.round(100 / hz) / 100;
-		$('#period_n').val(period);
-		$('#period_r').val(period);
-	});
-	pubsub.publish( 'bpm', $('#bpm_r').val() );
-
-  //  Reactive diastole
-  pubsub.subscribe('diastole', function(new_data) {
-    $('#diastole_n').val(new_data);
-    $('#diastole_r').val(new_data);
-  });
-
-  //  Reactive systole
-  pubsub.subscribe('systole', function(new_data) {
-    $('#systole_n').val(new_data);
-    $('#systole_r').val(new_data);
-  });
-
-}
-boot();
 
 //  Test function to toggle LEDs.
 function toggle_LED(pin_num) {
@@ -296,6 +236,82 @@ function draw_graph() {
   When the pulse starts, the x values remain the same,
     but the y values are added 1 by 1 over time.
 */
+
+//  Implements "reactive data"!  A pattern seen in all modern JS frameworks
+//    For example, when a slider updates, the text input updates too, and vice versa.
+//    Adapted from frontendmasters.com/blog/vanilla-javascript-reactivity.
+const pubsub = {
+  events: {},
+  subscribe(event, callback) {
+    if (!this.events[event]) this.events[event] = [];
+    this.events[event].push(callback);
+  },
+  publish(event, data) {
+    if (this.events[event]) this.events[event].forEach(function(callback) { callback(data) });
+  }
+};
+
+//  Called when the page loads.
+function boot() {
+	console.log('Pulse manager loaded! Hello! <3');
+
+	//  All these are setting up reactive data!
+  pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
+    console.log('inflow updated');
+    $('#inflow_n').val(new_data);
+    $('#inflow_r').val(new_data);
+  });
+  pubsub.publish( 'inflow', $('#inflow_r').val() );
+
+  //  Reactive outflow
+  pubsub.subscribe('outflow', function(new_data) {
+    $('#outflow_n').val(new_data);
+    $('#outflow_r').val(new_data);
+  });
+  pubsub.publish( 'outflow', $('#outflow_r').val() );
+
+  //  Reactive bpm
+  pubsub.subscribe('bpm', function(new_data) {
+    $('#bpm_n').val(new_data);
+    $('#bpm_r').val(new_data);
+	  let hz = Math.round(new_data * 100 / 60) / 100;
+		$('#hz_n').val(hz);
+		$('#hz_r').val(hz);
+		let period = Math.round(100 / hz) / 100;
+		$('#period_n').val(period);
+		$('#period_r').val(period);
+    bpm = new_data;
+    get_xValues();
+    draw_waveform();
+	});
+	pubsub.publish( 'bpm', $('#bpm_r').val() );
+
+  //  Reactive diastole
+  pubsub.subscribe('diastole', function(new_data) {
+    new_data = Number(new_data);
+    $('#diastole_n').val(new_data);
+    $('#diastole_r').val(new_data);
+    $('#systole_n').attr('min', new_data + 10);  //  Diastole must be < systole
+    $('#systole_r').attr('min', new_data + 10);
+    $('#systole_min').text(new_data + 10);
+    diastole = new_data;
+    draw_waveform();
+  });
+
+  //  Reactive systole
+  pubsub.subscribe('systole', function(new_data) {
+    $('#systole_n').val(new_data);
+    $('#systole_r').val(new_data);
+    $('#diastole_n').attr('max', new_data - 10);  //  Systole must be > diastole
+    $('#diastole_r').attr('max', new_data - 10);
+    $('#diastole_max').text(new_data - 10);
+    systole = new_data;
+    draw_waveform();
+  });
+
+}
+boot();
+
 
 
 //  Example of how to expose JS functions to Python (not used

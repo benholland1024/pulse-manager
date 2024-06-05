@@ -62,8 +62,12 @@
         <p class="input-container">
           Heart rate (bpm):
           <span>
-            <input type="range" min="30" max="200" id="bpm_r"
-              oninput="pubsub.publish('bpm', this.value)" />
+            <span class="range-labels">
+              <input type="range" min="30" max="200" id="bpm_r"
+                oninput="pubsub.publish('bpm', this.value)" />
+              <label class="min label">30</label>
+              <label class="max label">200</label>
+            </span>
             <input type="number" min="30" max="200" id="bpm_n" 
               oninput="pubsub.publish('bpm', this.value)" />
       		  beats / min
@@ -74,8 +78,12 @@
         <p class="input-container">
           Heart rate (Hz): 
           <span>
-            <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r"
-              oninput="pubsub.publish('bpm', this.value * 60)" />
+            <span class="range-labels">
+              <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r"
+                oninput="pubsub.publish('bpm', this.value * 60)" />
+              <label class="min label">0.50</label>
+              <label class="max label">3.33</label>
+            </span>
             <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n"
               oninput="pubsub.publish('bpm', this.value * 60)" />
         		beats / sec
@@ -86,11 +94,15 @@
         <p class="input-container">
           Period (s):
           <span>
-            <input type="range" min="0.3" max="2" step="0.01" id="period_r"
-              oninput="pubsub.publish('bpm', 60 / this.value )" />
+            <span class="range-labels">
+              <input type="range" min="0.3" max="2" step="0.01" id="period_r"
+                oninput="pubsub.publish('bpm', 60 / this.value )" />
+              <label class="min label">0.3</label>
+              <label class="max label">2</label>
+            </span>
             <input type="number" min="0.3" max="2" step="0.01" id="period_n"
                oninput="pubsub.publish('bpm', 60 / this.value )" />
-        		beats / sec
+        		seconds
           </span>
         </p>
 
@@ -103,9 +115,13 @@
         <p class="input-container">
           Diastole pressure:
           <span>
-            <input type="range" min="60" max="120" id="diastole_r" 
-              oninput="pubsub.publish('diastole', this.value)" value="80"/>
-            <input type="number" min="60" max="120" id="diastole_n" 
+            <span class="range-labels">
+              <input type="range" min="60" max="110" id="diastole_r" 
+                oninput="pubsub.publish('diastole', this.value)" value="80"/>
+              <label class="min label">60</label>
+              <label class="max label" id="diastole_max">120</label>
+            </span>
+            <input type="number" min="60" max="110" id="diastole_n" 
               oninput="pubsub.publish('diastole', this.value)" value="80"/>
         		mmHg
           </span>
@@ -115,8 +131,12 @@
         <p class="input-container">
           Systole pressure:
           <span>
-            <input type="range" min="90" max="210" id="systole_r" 
-              oninput="pubsub.publish('systole', this.value)" value="120"/>
+            <span class="range-labels">
+              <input type="range" min="90" max="210" id="systole_r" 
+                oninput="pubsub.publish('systole', this.value)" value="120"/>
+              <label class="min label" id="systole_min">9.0</label>
+              <label class="max label">210</label>
+            </span>
             <input type="number" min="90" max="210" id="systole_n" 
               oninput="pubsub.publish('systole', this.value)" value="120"/>
 		        mmHg

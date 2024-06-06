@@ -17,6 +17,7 @@ body {
 /* The content in the manual testing section */
 #manual, #waveform {
   padding: 10px;
+  display: none;
 }
 
 .flex-container {
@@ -24,14 +25,24 @@ body {
 }
 
 /*  An input container is a text label next to an input slider or textbox  */
-.input-container, {
-  display: flex;
-  align-items: center;
+.input-container {
+  display:         flex;
+  align-items:     center;
   justify-content: space-between;
-  width: 500px;
-  padding-top: 10px;
+  padding-top:     10px;
+  width: 450px;
 }
-
+.input-container label {
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+.unit {
+  opacity:         0.7;
+  font-size:       0.7em;
+  width:           50px;
+  display:         inline-block;
+  text-wrap:       wrap;
+}
 button, input {
   background: #666;
   padding: 5px 10px; 
@@ -60,7 +71,7 @@ input[type="range"] {
 .range-labels {
   position: relative;
 }
-.label {
+.range-labels label {
   position: absolute;
   top: -15px;
   font-size: .7em;
@@ -111,4 +122,11 @@ input[type="range"] {
   display: block;
   width: 600px;
   height: 300px;
+  background: #223;
+  box-shadow: 0px 0px 5px black inset;
+  padding: 10px;
+  border-radius: 5px;
+
+  left: 0px; right: 0px;
+  margin: 0px auto;
 }

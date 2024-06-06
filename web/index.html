@@ -15,8 +15,8 @@
 
 <body>
   <div class="topnav">
-    <a class="active" id="manual-btn" onclick="change_mode('manual')">Manual testing</a>
-    <a id="waveform-btn" onclick="change_mode('waveform')">Waveform manager</a>
+    <a id="manual-btn" onclick="App.change_mode('manual')">Manual testing</a>
+    <a id="waveform-btn" onclick="App.change_mode('waveform')">Waveform manager</a>
   </div>
 
   <!--                            -->
@@ -60,49 +60,43 @@
   
         <!--  Heart rate (bpm) input -->
         <p class="input-container">
-          Heart rate (bpm):
+          <label>Heart rate (bpm):</label>
           <span>
             <span class="range-labels">
-              <input type="range" min="30" max="200" id="bpm_r"
-                oninput="pubsub.publish('bpm', this.value)" />
-              <label class="min label">30</label>
-              <label class="max label">200</label>
+              <input type="range" min="30" max="200" id="bpm_r" />
+              <label class="min">30</label>
+              <label class="max">200</label>
             </span>
-            <input type="number" min="30" max="200" id="bpm_n" 
-              oninput="pubsub.publish('bpm', this.value)" />
-      		  beats / min
+            <input type="number" min="30" max="200" id="bpm_n" />
+      		  <span class="unit">beats / min</span>
           </span>
         </p>
 
         <!--  Heart rate (Hz)  -->
         <p class="input-container">
-          Heart rate (Hz): 
+          <label>Heart rate (Hz): </label>
           <span>
             <span class="range-labels">
-              <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r"
-                oninput="pubsub.publish('bpm', this.value * 60)" />
-              <label class="min label">0.50</label>
-              <label class="max label">3.33</label>
+              <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r" />
+              <label class="min">0.50</label>
+              <label class="max">3.33</label>
             </span>
-            <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n"
-              oninput="pubsub.publish('bpm', this.value * 60)" />
-        		beats / sec
+            <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n" />
+         		<span class="unit">beats / sec</span?
           </span>
         </p>
 
         <!--  Heart rate period (s)  -->
         <p class="input-container">
-          Period (s):
+          <label>Period:</label>
           <span>
             <span class="range-labels">
-              <input type="range" min="0.3" max="2" step="0.01" id="period_r"
-                oninput="pubsub.publish('bpm', 60 / this.value )" />
-              <label class="min label">0.3</label>
-              <label class="max label">2</label>
+              <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
+              <label class="min">0.3</label>
+              <label class="max">2</label>
             </span>
-            <input type="number" min="0.3" max="2" step="0.01" id="period_n"
-               oninput="pubsub.publish('bpm', 60 / this.value )" />
-        		seconds
+            <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
+        		<span class="unit">seconds</span>
           </span>
         </p>
 
@@ -113,33 +107,29 @@
   
         <!--  Diastole pressure input -->
         <p class="input-container">
-          Diastole pressure:
+          <label>Diastole pressure:</label>
           <span>
             <span class="range-labels">
-              <input type="range" min="60" max="110" id="diastole_r" 
-                oninput="pubsub.publish('diastole', this.value)" value="80"/>
-              <label class="min label">60</label>
-              <label class="max label" id="diastole_max">120</label>
+              <input type="range" min="60" max="110" id="diastole_r" />
+              <label class="min">60</label>
+              <label class="max" id="diastole_max">120</label>
             </span>
-            <input type="number" min="60" max="110" id="diastole_n" 
-              oninput="pubsub.publish('diastole', this.value)" value="80"/>
-        		mmHg
+            <input type="number" min="60" max="110" id="diastole_n" />
+        		<span class="unit">mmHg</span>
           </span>
         </p>
 
         <!--  Systole pressure input  -->
         <p class="input-container">
-          Systole pressure:
+          <label>Systole pressure:</label>
           <span>
             <span class="range-labels">
-              <input type="range" min="90" max="210" id="systole_r" 
-                oninput="pubsub.publish('systole', this.value)" value="120"/>
-              <label class="min label" id="systole_min">9.0</label>
-              <label class="max label">210</label>
+              <input type="range" min="90" max="210" id="systole_r" />
+              <label class="min" id="systole_min">9.0</label>
+              <label class="max">210</label>
             </span>
-            <input type="number" min="90" max="210" id="systole_n" 
-              oninput="pubsub.publish('systole', this.value)" value="120"/>
-		        mmHg
+            <input type="number" min="90" max="210" id="systole_n" />
+		        <span class="unit">mmHg</span>
           </span>
         </p>
 
@@ -148,8 +138,8 @@
 
     <!--  Button to toggle pulse  -->
     <p>
-      <button onclick="start_pulse()" id="start-pulse"> &#9654; Start pulse</button>
-      <button onclick="stop_pulse()" id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
+      <button onclick="PressureWave.start_pulse()" id="start-pulse"> &#9654; Start pulse</button>
+      <button onclick="PressureWave.stop_pulse()" id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
     </p>
 
     <!--  Waveform graph  -->
@@ -160,5 +150,5 @@
   <div>
 </body>
 
-<script src="main.js"></script>
+<script src="main.js" type="module"></script>
 </html>

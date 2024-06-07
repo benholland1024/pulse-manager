@@ -167,7 +167,14 @@ input[type="range"] {
   justify-content: center;
   margin-bottom: 10px;
 }
-
+#clock {
+  display: inline-block;
+  padding: 3px;
+  background: #222;
+  box-shadow: 0px 0px 3px black inset;
+  font-family: monospace;
+  width: 80px;
+}
 
 
 

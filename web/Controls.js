@@ -25,42 +25,58 @@ let BpmControls = {
 }
 
 
-let DiastoleControl = {
+let PressureControl = {
+
   init: function() {
-    //  Reactive diastole
-    PubSub.subscribe('diastole', function(new_data) {
-      new_data = Number(new_data);
-      $('#diastole_n').val(new_data);
-      $('#diastole_r').val(new_data);
-      $('#systole_n').attr('min', new_data + 10);  //  Diastole must be < systole
-      $('#systole_r').attr('min', new_data + 10);
-      $('#systole_min').text(new_data + 10);
-      PressureWave.diastole = new_data;
+    //  The two-handled slider
+    this.slider = $('#pressure-range').slider({
+      range: true,
+      min: 30,
+      max: 210,
+      values: [80, 120],
+      slide: function(event, ui) {
+        let diastole = ui.values[0];
+        let systole = ui.values[1];
+        console.log(`Systole: ${systole}`);
+        PressureWave.diastole = diastole;
+        PressureWave.systole = systole;
+        PubSub.publish('diastole', diastole);
+        PubSub.publish('systole', systole);
+        PressureWave.draw_waveform();
+      }
+    });
+
+    //  Diastole textbox
+    PubSub.subscribe('diastole', function(new_diastole) {
+      new_diastole = Number(new_diastole);
+      $('#diastole_n').val(new_diastole);
+      $('#pressure-range').slider('values', 0, new_diastole);
+      $('#systole_n').attr('min', new_diastole);  //  Diastole must be < systole
+      PressureWave.diastole = new_diastole;
       PressureWave.draw_waveform();
     });
-    $('#diastole_r').on('input', function() { PubSub.publish('diastole', $('#diastole_r').val() ) });
     $('#diastole_n').on('input', function() { PubSub.publish('diastole', $('#diastole_n').val() ) });
-  }
-}
 
-
-let SystoleControl = {
-  init: function() {
-    //  Reactive systole
-    PubSub.subscribe('systole', function(new_data) {
-      $('#systole_n').val(new_data);
-      $('#systole_r').val(new_data);
-      $('#diastole_n').attr('max', new_data - 10);  //  Systole must be > diastole
-      $('#diastole_r').attr('max', new_data - 10);
-      $('#diastole_max').text(new_data - 10);
-      PressureWave.systole = new_data;
+    //  Systole textbox
+    PubSub.subscribe('systole', function(new_systole) {
+      new_systole = Number(new_systole);
+      $('#systole_n').val(new_systole);
+      $('#pressure-range').slider('values', 1, new_systole);
+      $('#diastole_n').attr('max', new_systole);  //  systole must be > systole
+      PressureWave.systole = new_systole;
       PressureWave.draw_waveform();
     });
-    $('#systole_r').on('input', function() { PubSub.publish('systole', $('#systole_r').val() ) });
     $('#systole_n').on('input', function() { PubSub.publish('systole', $('#systole_n').val() ) });
   }
 }
-export { BpmControls, DiastoleControl, SystoleControl }
-//export BpmControls;
-//export DiastoleControl;
-//export SystoleControl;
+
+
+let PulseButtons = {
+  init: function() {
+    $('#start-pulse').on('click', function() { PressureWave.start_pulse(); });
+    $('#stop-pulse').on('click', function() { PressureWave.stop_pulse(); });
+  }
+}
+
+export { BpmControls, PressureControl, PulseButtons }
+

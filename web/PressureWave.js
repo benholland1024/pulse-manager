@@ -126,6 +126,7 @@ function PressureWave_start_pulse() {
 
 //  Runs every few milliseconds after "start_pulse()"
 function PressureWave_pulse_step() {
+  console.log(this.chart.data.datasets);
   this.chart.data.datasets[0].data.push( this.get_ap_value( pulse_i ) );
   this.chart.data.datasets[1].data.push( this.get_vp_value( pulse_i ) );
   if (this.pulse_i < this.xValues.length - 1) {

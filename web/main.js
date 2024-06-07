@@ -1,7 +1,7 @@
 //  main.js  --  This file runs when the app loads.
 
 import PressureWave from './PressureWave.js';
-import { BpmControls, DiastoleControl, SystoleControl } from './Controls.js';
+import { BpmControls, PressureControl, PulseButtons } from './Controls.js';
 import pubsub from './PubSub.js';
 
 //  Test function to toggle LEDs.
@@ -26,7 +26,10 @@ function App_change_mode(new_mode) {
   if (this.mode == 'waveform') {
     PressureWave.init();
   	pubsub.publish( 'bpm', $('#bpm_r').val() );
+//  	pubsub.publish( 'diastole', $('#diastole_r').val() );
+//  	pubsub.publish( 'systole', $('#systole_r').val() );
     PressureWave.draw_waveform();
+    console.log(PressureWave.chart);
   }
 }
 
@@ -50,8 +53,9 @@ function boot() {
   pubsub.publish( 'outflow', $('#outflow_r').val() );
 
   BpmControls.init();
-  DiastoleControl.init();
-  SystoleControl.init();
+  PressureControl.init();
+
+  PulseButtons.init();
 
   App.change_mode(App.mode);
 }

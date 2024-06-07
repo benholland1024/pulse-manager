@@ -30,11 +30,16 @@ body {
   align-items:     center;
   justify-content: space-between;
   padding-top:     10px;
-  width: 450px;
+  width: 400px;
 }
 .input-container label {
   font-size: 0.7em;
   opacity: 0.7;
+}
+.input-container input[type="number"] {
+  margin-left: 10px;
+  width: 75px;
+  box-shadow: 0px 0px 3px black inset;
 }
 .unit {
   opacity:         0.7;
@@ -112,10 +117,36 @@ input[type="range"] {
   color: white;
 }
 
+/*  For the pressure slider, through jquery-ui  */
+.ui-slider {
+  width: 129px;
+  height:5px;  
+}
+.ui-slider-range {
+  background: #55f;
+  border: solid 2px #55f !important;
+  top: -1px !important;
+}
+.ui-slider-handle {
+  height: 1em !important;
+  width: 1em !important;
+  border-radius: 50%;
+  background: #55f !important;
+  border: 1px solid #55f !important;
+  top: -6px !important;
+}
+
 
 /***********************************/
 /***   Waveform manager styles   ***/
 /***********************************/
+
+#pressures {
+  width: 400px;
+}
+#pressures .input-container {
+  width: 260px;
+}
 
 /* Style the chart canvas */
 #graph-container {
@@ -130,3 +161,13 @@ input[type="range"] {
   left: 0px; right: 0px;
   margin: 0px auto;
 }
+
+#pulse-btns {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+
+
+

@@ -1,6 +1,7 @@
 //  main.js  --  This file runs when the app loads.
 
 import PressureWave from './PressureWave.js';
+import AirflowWave from './AirflowWave.js';
 import { BpmControls, PressureControl, PulseButtons } from './Controls.js';
 import pubsub from './PubSub.js';
 
@@ -30,6 +31,9 @@ function App_change_mode(new_mode) {
 //  	pubsub.publish( 'systole', $('#systole_r').val() );
     PressureWave.draw_waveform();
     console.log(PressureWave.chart);
+
+    AirflowWave.init();
+    AirflowWave.draw_waveform();
   }
 }
 

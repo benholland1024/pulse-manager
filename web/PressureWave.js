@@ -176,7 +176,7 @@ function PressureWave_init() {
   let gridlineColor = '#333';
   let _this = this; //  To refer to PressureWave and not Chart
 
-  this.chart = new Chart("pulse-graph", {
+  this.chart = new Chart("pressure-graph", {
     type: "line",
     data: {
       labels: this.xValues,
@@ -215,7 +215,10 @@ function PressureWave_init() {
         labels: {
           fontColor: fontColor,
           filter: function (item, data) { return item.text != 'hide this'; }
-        }
+        },
+      },
+      tooltips: {
+        filter: function (item) { return item.datasetIndex < 2; }
       },
       title: {
         display: true,

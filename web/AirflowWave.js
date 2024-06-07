@@ -1,5 +1,3 @@
-
-
 // ###     ###                         ###     ###
 //    #   #   #      Airflow Wave     #   #   #
 //     ###     ###                 ###     ###
@@ -12,10 +10,11 @@ import PressureWave from './PressureWave.js';
 
 let AirflowWave = {
   //  Properties:
-  inflow:     [],         //  List of airflow values, which can be negative
+  inflow:       [],         //  List of airflow values, which can be negative
                           //    (y value list, the same size as PressureWave.xValues)
-  chart:      undefined,  //  Stores a ChartJS object
-  pulse_loop: undefined,  //  Stores a setInterval object
+  inflow_faded: [],
+  chart:        undefined,  //  Stores a ChartJS object
+  pulse_loop:   undefined,  //  Stores a setInterval object
 
   //  CONSTANTS:  See PressureWave
   step_size: 0.025,     //  The interval between graph points
@@ -25,16 +24,16 @@ let AirflowWave = {
   get_inflow_all:    AirflowWave_get_inflow_all,
   get_inflow_value:  AirflowWave_get_inflow_value,
 
-  update_bpm:    PressureWave_update_bpm,
-  draw_waveform: PressureWave_draw_waveform,
-  start_pulse:   PressureWave_start_pulse,
-  pulse_step:    PressureWave_pulse_step,
-  stop_pulse:    PressureWave_stop_pulse,
-  init:          PressureWave_init
+  update_bpm:    AirflowWave_update_bpm,
+  draw_waveform: AirflowWave_draw_waveform,
+  start_pulse:   AirflowWave_start_pulse,
+  pulse_step:    AirflowWave_pulse_step,
+  stop_pulse:    AirflowWave_stop_pulse,
+  init:          AirflowWave_init
 
 }
 
-//  Return all inflow values
+//  Return all atrial pressures
 function AirflowWave_get_inflow_all() {
   let _inflow = [];
   let xrange = PressureWave.xValues.length - 1;
@@ -46,84 +45,69 @@ function AirflowWave_get_inflow_all() {
 }
 
 //  Return an individual y value. Needed for pulse drawing
-function PressureWave_get_ap_value(i) {
-  let xrange = this.xValues.length - 1;
-  let yrange = this.systole - this.diastole;
-   //  4 Pi because we want 2 wavelengths.
-  let value = this.diastole + ( yrange * Math.sin(i * 4 * Math.PI / xrange ) );
-  if (value < this.diastole)
-    value = this.diastole;
-  return value;
-}
-
-//  Get left ventrical pressure
-function PressureWave_get_vp_all() {
-  let _vp = []
-  let xrange = this.xValues.length - 1;
-  for (let i = 0; i < xrange; i++) {
-    let value = this.get_vp_value(i);
-    _vp.push(value);
-  }
-  return _vp;
-}
-
-//
-function PressureWave_get_vp_value(i) {
-  let xrange = this.xValues.length - 1;
-  let yrange = this.systole - this.diastole;
-   //  4 Pi because we want 2 wavelengths.
-  let value = ( this.systole * Math.sin(i * 4 * Math.PI / xrange ) );
-  if (value < 0)
+function AirflowWave_get_inflow_value(i) {
+  let xrange = PressureWave.xValues.length - 1;
+  let yrange = PressureWave.systole - PressureWave.diastole;
+   //  4 Pi because we want 2 wavelengths
+  let value = 10 * Math.cos(i * 4 * Math.PI / xrange );
+  let pressure_value = PressureWave.diastole + ( yrange * Math.sin(i * 4 * Math.PI / xrange ) );
+  value = Math.round(value * 1000) / 1000;
+  if (pressure_value < PressureWave.diastole)
     value = 0;
   return value;
 }
 
-function PressureWave_update_bpm(new_bpm) {
+
+//
+function AirflowWave_update_bpm(new_bpm) {
   this.bpm = new_bpm;
-  this.xValues = this.get_xValues();
-  this.chart.data.labels = this.xValues;
+  PressureWave.xValues = this.get_xValues();
+  this.draw_waveform();
+  this.chart.data.labels = PressureWave.xValues;
   this.chart.update();
 }
 
 //  Draw the waveform, with no changes
-function PressureWave_draw_waveform() {
-  this.ap = this.get_ap_all();
-  this.vp = this.get_vp_all();
-  this.chart.data.datasets[0].data = this.ap;
-  this.chart.data.datasets[1].data = this.vp;
+function AirflowWave_draw_waveform() {
+  this.inflow = this.get_inflow_all();
+  this.inflow_faded = this.get_inflow_all();
+  this.chart.data.datasets[0].data = this.inflow;
+  this.chart.data.datasets[1].data = this.inflow_faded;  //  faded datasets
   this.chart.update();
 }
 
 //  Trigged by "start pulse" button
-function PressureWave_start_pulse() {
-  this.ap = [];
-  this.vp = [];
-  this.init();
-  this.pulse_loop = setInterval(this.pulse_step, this.step_size * 1000);
+function AirflowWave_start_pulse() {
+  this.inflow = [];
+  this.chart.data.datasets[0].data = this.inflow;
+  this.chart.data.datasets[1].data = this.inflow_faded;
+  this.chart.update();
+  this.pulse_loop = setInterval(this.pulse_step, Math.round(this.step_size * 1000));
   $('#stop-pulse').css('display', 'block');
   $('#start-pulse').css('display', 'none');
   eel.start_PWM(12);
 }
 
+let clock = 0;
 //  Runs every few milliseconds after "start_pulse()"
-function PressureWave_pulse_step() {
-  console.log(this.chart.data.datasets);
-  this.chart.data.datasets[0].data.push( this.get_ap_value( pulse_i ) );
-  this.chart.data.datasets[1].data.push( this.get_vp_value( pulse_i ) );
-  if (this.pulse_i < this.xValues.length - 1) {
-    this.pulse_i++;
+function AirflowWave_pulse_step() {
+  let _this = AirflowWave;
+  clock += Math.round(_this.step_size * 1000) / 1000;
+  $('#clock').text(Math.round(clock*100)/100);
+  console.log(_this.chart.data.datasets);
+  _this.chart.data.datasets[0].data.push( _this.get_inflow_value( _this.pulse_i ) );
+  if (_this.pulse_i < PressureWave.xValues.length - 1) {
+    _this.pulse_i++;
   } else {
-    this.ap = [];
-    this.vp = [];
-    this.chart.data.datasets[0].data = ap;
-    this.chart.data.datasets[1].data = vp;
-    this.pulse_i = 0;
+    _this.inflow = [];
+    _this.chart.data.datasets[0].data = _this.inflow;
+    _this.pulse_i = 0;
   }
-  this.chart.update();
+  _this.chart.update();
 }
 
 //  Stops the pulse loop
-function PressureWave_stop_pulse() {
+function AirflowWave_stop_pulse() {
   clearInterval(this.pulse_loop);
   this.pulse_i = 0;
   this.draw_waveform();
@@ -133,42 +117,47 @@ function PressureWave_stop_pulse() {
 }
 
 //
-function PressureWave_init() {
-  this.xValues = this.get_xValues();
+function AirflowWave_init() {
 
   let fontColor = 'white';
   let gridlineColor = '#333';
-  let _this = this; //  To refer to PressureWave and not Chart
+  let _this = this; //  To refer to AirflowWave and not Chart
 
-  this.chart = new Chart("pulse-graph", {
+  this.chart = new Chart("airflow-graph", {
     type: "line",
     data: {
-      labels: this.xValues,
-      datasets: [{
+      labels: PressureWave.xValues,
+      datasets: [{  //  Air inflow values
         fill: false,
         pointRadius: 2,
-        borderColor: "rgba(255,100,100,1)",
-        label: 'Aortic pressure (AP)',
-        showLine: false,
-        data: this.ap
-      }, {
+        borderColor: "rgba(100,100,250,1)",
+        label: 'Air inflow',
+        showLine: true,
+        data: this.inflow
+      }, {          //  Air inflow "faded values" for pulse
         fill: false,
         pointRadius: 2,
-        borderColor: "rgba(180,100,200,1)",
-        label: 'Ventricular pressure (VP)',
-        data: this.vp
+        borderColor: "rgba(100,100,250,0.5)",
+        label: 'hide this',
+        showLine: true,
+        data: this.inflow_faded,
+        options: {legend: {display:false}}
       }]
     },
     options: {
       legend: {
         display: true,
         labels: {
-          fontColor: fontColor
+          fontColor: fontColor,
+          filter: function (item, data) { return item.text != 'hide this'; }
         }
       },
+      tooltips: {
+        filter: function (item) { return item.datasetIndex < 1; }
+      },
       title: {
-        display: true,
-        text: "Current waveform:",
+        display: false,
+        text: "Airflow waveform:",
         fontSize: 16,
         fontColor: fontColor,
       },
@@ -176,13 +165,13 @@ function PressureWave_init() {
         yAxes: [{
           scaleLabel: {
             display: true,
-               labelString: 'Pressure (mmHg)',
+               labelString: 'Air inflow (cm<sup>3</sup>/s)',
             fontColor: fontColor
           },
           ticks: {
             fontColor: fontColor,
-            suggestedMin: 0,
-            suggestedMax: 200
+            suggestedMin: -15,
+            suggestedMax: 15
           }
         }],
         xAxes: [{
@@ -210,4 +199,4 @@ function PressureWave_init() {
   });
 }
 
-export default PressureWave;
+export default AirflowWave;

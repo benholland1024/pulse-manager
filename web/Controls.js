@@ -1,5 +1,6 @@
 import PubSub from './PubSub.js';
 import PressureWave from './PressureWave.js';
+import CCycle from './CCycle.js';
 
 let BpmControls = {
   init: function () {
@@ -13,7 +14,7 @@ let BpmControls = {
 		  let period = Math.round(100 / hz) / 100;
 	  	$('#period_n').val(period);
 	  	$('#period_r').val(period);
-      PressureWave.update_bpm(new_bpm);
+      CCycle.update_bpm(new_bpm);
 	  });
     $('#bpm_r').on('input', function() { PubSub.publish('bpm', $('#bpm_r').val() ) });
     $('#bpm_n').on('input', function() { PubSub.publish('bpm', $('#bpm_n').val() ) });
@@ -38,11 +39,11 @@ let PressureControl = {
         let diastole = ui.values[0];
         let systole = ui.values[1];
         console.log(`Systole: ${systole}`);
-        PressureWave.diastole = diastole;
-        PressureWave.systole = systole;
+        CCycle.diastole = diastole;
+        CCycle.systole = systole;
         PubSub.publish('diastole', diastole);
         PubSub.publish('systole', systole);
-        PressureWave.draw_waveform();
+        CCycle.draw();
       }
     });
 
@@ -52,8 +53,8 @@ let PressureControl = {
       $('#diastole_n').val(new_diastole);
       $('#pressure-range').slider('values', 0, new_diastole);
       $('#systole_n').attr('min', new_diastole);  //  Diastole must be < systole
-      PressureWave.diastole = new_diastole;
-      PressureWave.draw_waveform();
+      CCycle.diastole = new_diastole;
+      CCycle.draw();
     });
     $('#diastole_n').on('input', function() { PubSub.publish('diastole', $('#diastole_n').val() ) });
 
@@ -63,8 +64,8 @@ let PressureControl = {
       $('#systole_n').val(new_systole);
       $('#pressure-range').slider('values', 1, new_systole);
       $('#diastole_n').attr('max', new_systole);  //  systole must be > systole
-      PressureWave.systole = new_systole;
-      PressureWave.draw_waveform();
+      CCycle.systole = new_systole;
+      CCycle.draw();
     });
     $('#systole_n').on('input', function() { PubSub.publish('systole', $('#systole_n').val() ) });
   }

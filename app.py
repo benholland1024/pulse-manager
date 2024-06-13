@@ -72,4 +72,4 @@ def on_close(url, open_websockets):
     GPIO.cleanup()
     exit()
 
-eel.start('index.html', close_callback=on_close)
+eel.start('index.html', close_callback=on_close, size=(800,480))

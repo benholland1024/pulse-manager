@@ -5,11 +5,6 @@ import AirflowWave from './AirflowWave.js';
 import { BpmControls, PressureControl, PulseButtons } from './Controls.js';
 import pubsub from './PubSub.js';
 
-//  Test function to toggle LEDs.
-function toggle_LED(pin_num) {
-  eel.toggle_LED(pin_num);
-}
-
 //  This object represents the entire app.
 let App = {
   mode: 'waveform',  //  Options: 'manual', 'waveform'
@@ -32,8 +27,8 @@ function App_change_mode(new_mode) {
     PressureWave.draw_waveform();
     console.log(PressureWave.chart);
 
-    AirflowWave.init();
-    AirflowWave.draw_waveform();
+    //AirflowWave.init();
+    //AirflowWave.draw_waveform();
   }
 }
 
@@ -65,7 +60,10 @@ function boot() {
 }
 boot();
 
-
+//  Test function to toggle LEDs.
+function toggle_LED(pin_num) {
+  eel.toggle_LED(pin_num);
+}
 
 //  Example of how to expose JS functions to Python (not used
 eel.expose(prompt_alerts);

@@ -16,53 +16,28 @@
 </head>
 
 <body>
-  <div class="topnav">
-    <a id="manual-btn" onclick="App.change_mode('manual')">Manual testing</a>
-    <a id="waveform-btn" onclick="App.change_mode('waveform')">Waveform manager</a>
-  </div>
 
-  <!--                            -->
-  <!--  MANUAL TESTING INTERFACE  --> 
-  <!--                            -->
-  <div id="manual">
-    <h2>Manual testing</h2>
-    <p class="input-container">
-      Open inflow valve 
-      <span>
-        <input type="range" min="0" max="100" id="inflow_r" 
-          oninput="pubsub.publish('inflow', this.value)" />
-        <input type="number" min="0" max="100" id="inflow_n" 
-          oninput="pubsub.publish('inflow', this.value)" />
-      </span>
-    </p>
-    <p class="input-container">
-      Open outflow valve
-      <span>
-        <input type="range" min="0" max="100" id="outflow_r"
-          oninput="pubsub.publish('outflow', this.value)" />
-        <input type="number" min="0" max="100" id="outflow_n"
-          oninput="pubsub.publish('outflow', this.value)" />
-      </span>
-    </p>
-    <button onclick="toggle_LED('red')"> Toggle LED 1</button>
-    <button onclick="toggle_LED('blue')"> Toggle LED 2</button>
-  </div>
+  <div id="panel-container">
+    <div id="controls">
+      <div class="topnav">
+        <a id="waveform-btn" style="active">Waveform</a>
+        <a id="calibrate-btn">Calibrate</a>
+      </div>
 
-  <!--                             -->
-  <!--  WAVEFORM TESTING INTERFACE -->
-  <!--                             -->
-  <div id="waveform" style="display: none;">
 
-    <h2>Waveform manager</h2>
-    
-    <div class="flex-container" style="justify-content: space-between">
+      <!--  Button to toggle pulse  -->
+      <div id="pulse-btns">
+        <button id="start-pulse"> &#9654; Start pulse</button>
+        <button id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
+        &nbsp;<div id="clock">0:00</div>
+      </div>
 
       <!--  Container for all rate and period inputs -->
       <div id="rate-and-period">
   
         <!--  Heart rate (bpm) input -->
+        <label>Heart rate (bpm):</label>
         <p class="input-container">
-          <label>Heart rate (bpm):</label>
           <span>
             <span class="range-labels">
               <input type="range" min="30" max="200" id="bpm_r" />
@@ -70,13 +45,12 @@
               <label class="max">200</label>
             </span>
             <input type="number" min="30" max="200" id="bpm_n" />
-      		  <span class="unit">beats / min</span>
           </span>
         </p>
 
         <!--  Heart rate (Hz)  -->
+        <label>Heart rate (beats / sec) (Hz): </label>
         <p class="input-container">
-          <label>Heart rate (Hz): </label>
           <span>
             <span class="range-labels">
               <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r" />
@@ -84,13 +58,12 @@
               <label class="max">3.33</label>
             </span>
             <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n" />
-         		<span class="unit">beats / sec</span?
           </span>
         </p>
 
         <!--  Heart rate period (s)  -->
+        <label>Period:</label>
         <p class="input-container">
-          <label>Period:</label>
           <span>
             <span class="range-labels">
               <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
@@ -98,12 +71,11 @@
               <label class="max">2</label>
             </span>
             <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
-        		<span class="unit">seconds</span>
           </span>
         </p>
 
       </div> <!--  End rate and period container -->
-  
+
       <!--  Container for pressures -->
       <div id="pressures">
         
@@ -115,37 +87,61 @@
             <label class="min">30</label>
             <label class="max">210</label>
           </div>
-        </div>
-
+        </div><br/>
+        
         <div class="input-container">
-          <label>Diastole:</label>
+          <label>Diastole (mmHg):</label>
           <input type="number" min="60" max="110" value="80" id="diastole_n" />
-          <label>mmHg</label>
-        </div>
+        </div><br/>
 
         <div class="input-container">
-          <label>Systole:</label>
+          <label>Systole (mmHg):</label>
           <input type="number" min="90" max="210" value="120" id="systole_n" />
-          <label>mmHg</label>
         </div>
 
       </div>  <!--  End pressure container  -->
-    </div> <!--  End flex container  -->
 
-    <!--  Button to toggle pulse  -->
-    <div id="pulse-btns">
-      <button id="start-pulse"> &#9654; Start pulse</button>
-      <button id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
-      &nbsp;<div id="clock">0:00</div>
     </div>
+    <div id="graphs">
+      <!--                            -->
+      <!--  MANUAL TESTING INTERFACE  --> 
+      <!--                            -->
+      <div id="manual" style="display: none">
+        <h2>Manual testing</h2>
+        <p class="input-container">
+          Open inflow valve 
+          <span>
+            <input type="range" min="0" max="100" id="inflow_r" 
+              oninput="pubsub.publish('inflow', this.value)" />
+            <input type="number" min="0" max="100" id="inflow_n" 
+              oninput="pubsub.publish('inflow', this.value)" />
+          </span>
+        </p>
+        <p class="input-container">
+          Open outflow valve
+          <span>
+            <input type="range" min="0" max="100" id="outflow_r"
+              oninput="pubsub.publish('outflow', this.value)" />
+            <input type="number" min="0" max="100" id="outflow_n"
+              oninput="pubsub.publish('outflow', this.value)" />
+          </span>
+        </p>
+        <button onclick="toggle_LED('red')"> Toggle LED 1</button>
+        <button onclick="toggle_LED('blue')"> Toggle LED 2</button>
+      </div>
 
-    <!--  Waveform graph  -->
-    <div id="graph-container">
-      <canvas id="pressure-graph"></canvas><br/><br/>
-      <canvas id="airflow-graph"></canvas>
+      <!--                             -->
+      <!--  WAVEFORM TESTING INTERFACE -->
+      <!--                             -->
+      <!--  Waveform graph  -->
+      <div id="graph-container">
+        <canvas id="pressure-graph"></canvas><br/><br/>
+        <canvas id="airflow-graph"></canvas>
+      </div>
+
+
     </div>
-
-  <div>
+  </div>
 </body>
 
 <script src="main.js" type="module"></script>

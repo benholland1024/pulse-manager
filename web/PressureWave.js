@@ -7,7 +7,7 @@
 //          Manages the graph of aortic &
 //               ventricular pressure.
 
-import CCycle from './CCycle.js';
+import UserInput from './UserInput.js';
 
 let PressureWave = {
   //  Properties:
@@ -36,7 +36,7 @@ let PressureWave = {
 //  Return all atrial pressures
 function PressureWave_get_ap_all() {
   let _ap = [];
-  let xrange = CCycle.xValues.length - 1;
+  let xrange = UserInput.xValues.length - 1;
   for (let i = 0; i < xrange; i++) {
     let value = this.get_ap_value(i);
     _ap.push(value);
@@ -46,20 +46,20 @@ function PressureWave_get_ap_all() {
 
 //  Return an individual y value. Needed for pulse drawing
 function PressureWave_get_ap_value(i) {
-  let xrange = CCycle.xValues.length - 1;
-  let yrange = CCycle.systole - CCycle.diastole;
+  let xrange = UserInput.xValues.length - 1;
+  let yrange = UserInput.systole - UserInput.diastole;
    //  4 Pi because we want 2 wavelengths.
-  let value = CCycle.diastole + ( yrange * Math.sin(i * 4 * Math.PI / xrange ) );
+  let value = UserInput.diastole + ( yrange * Math.sin(i * 4 * Math.PI / xrange ) );
   value = Math.round(value * 1000) / 1000;
-  if (value < CCycle.diastole)
-    value = CCycle.diastole;
+  if (value < UserInput.diastole)
+    value = UserInput.diastole;
   return value;
 }
 
 //  Get left ventrical pressure
 function PressureWave_get_vp_all() {
   let _vp = []
-  let xrange = CCycle.xValues.length - 1;
+  let xrange = UserInput.xValues.length - 1;
   for (let i = 0; i < xrange; i++) {
     let value = this.get_vp_value(i);
     _vp.push(value);
@@ -69,10 +69,10 @@ function PressureWave_get_vp_all() {
 
 //
 function PressureWave_get_vp_value(i) {
-  let xrange = CCycle.xValues.length - 1;
-  let yrange = CCycle.systole - CCycle.diastole;
+  let xrange = UserInput.xValues.length - 1;
+  let yrange = UserInput.systole - UserInput.diastole;
    //  4 Pi because we want 2 wavelengths.
-  let value = ( CCycle.systole * Math.sin(i * 4 * Math.PI / xrange ) );
+  let value = ( UserInput.systole * Math.sin(i * 4 * Math.PI / xrange ) );
   value = Math.round(value * 1000) / 1000;
   if (value < 0)
     value = 0;
@@ -89,6 +89,7 @@ function PressureWave_draw() {
   this.chart.data.datasets[1].data = this.vp;
   this.chart.data.datasets[2].data = this.ap_faded;  //  faded datasets
   this.chart.data.datasets[3].data = this.vp_faded;
+  this.chart.data.labels = UserInput.xValues;
   this.chart.update();
 }
 
@@ -114,7 +115,7 @@ function PressureWave_pulse_step() {
   console.log(_this.chart.data.datasets);
   _this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
   _this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
-  if (_this.pulse_i < CCycle.xValues.length - 1) {
+  if (_this.pulse_i < UserInput.xValues.length - 1) {
     _this.pulse_i++;
   } else {
     _this.ap = [];
@@ -138,7 +139,7 @@ function PressureWave_stop_pulse() {
 
 //
 function PressureWave_init() {
-  CCycle.xValues = CCycle.get_xValues();
+  UserInput.xValues = UserInput.get_xValues();
 
   let fontColor = 'white';
   let gridlineColor = '#333';
@@ -147,7 +148,7 @@ function PressureWave_init() {
   this.chart = new Chart("pressure-graph", {
     type: "line",
     data: {
-      labels: CCycle.xValues,
+      labels: UserInput.xValues,
       datasets: [{  //  AP values
         fill: false,
         pointRadius: 2,

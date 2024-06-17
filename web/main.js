@@ -1,8 +1,36 @@
-//  main.js  --  This file runs when the app loads.
+/*                  [art from loveascii.com/hearts.html]
+
+                            |  \ \ | |/ /
+                            |  |\ `' ' /
+                            |  ;'aorta \      / , pulmonary
+                            | ;    _,   |    / / ,  arteries
+                   superior | |   (  `-.;_,-' '-' ,
+                  vena cava | `,   `-._       _,-'_
+                            |,-`.    `.)    ,<_,-'_, pulmonary
+                           ,'    `.   /   ,'  `;-' _,  veins
+                          ;        `./   /`,    \-'
+                          | right   /   |  ;\   |\
+                          | atrium ;_,._|_,  `, ' \
+                          |        \    \ `       `,
+                          `      __ `    \   left  ;,
+                           \   ,'  `      \,  ventricle
+                            \_(            ;,      ;;
+                            |  \           `;,     ;;
+                   inferior |  |`.          `;;,   ;'
+                  vena cava |  |  `-.        ;;;;,;'
+                            |  |    |`-.._  ,;;;;;'
+                            |  |    |   | ``';;;'
+                                    aorta
+*/
+
+
+//
+//    --^v--^v--  main.js : This file runs when the app loads  --^v--^v--
+//
 
 import PressureWave from './PressureWave.js';
 import AirflowWave from './AirflowWave.js';
-import { BpmControls, PressureControl, PulseButtons } from './Controls.js';
+import UserInput from './UserInput.js';
 import pubsub from './PubSub.js';
 
 //  This object represents the entire app.
@@ -24,18 +52,18 @@ function App_change_mode(new_mode) {
   	pubsub.publish( 'bpm', $('#bpm_r').val() );
 //  	pubsub.publish( 'diastole', $('#diastole_r').val() );
 //  	pubsub.publish( 'systole', $('#systole_r').val() );
-    PressureWave.draw_waveform();
+    PressureWave.draw();
     console.log(PressureWave.chart);
 
     //AirflowWave.init();
-    //AirflowWave.draw_waveform();
+    //AirflowWave.draw();
   }
 }
 
 
 //  Called when the page loads.
 function boot() {
-	console.log('Pulse manager loaded! Hello! <3');
+  console.log('Pulse manager loaded! Hello! <3');
 
 	//  All these are setting up reactive data!
   pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
@@ -51,10 +79,7 @@ function boot() {
   });
   pubsub.publish( 'outflow', $('#outflow_r').val() );
 
-  BpmControls.init();
-  PressureControl.init();
-
-  PulseButtons.init();
+  UserInput.init();
 
   App.change_mode(App.mode);
 }

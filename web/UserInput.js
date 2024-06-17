@@ -1,5 +1,15 @@
+
+//
+//    --^v--^v--  UserInput.js  --^v--^v--
+//
+
+//    Manages user input: BPM, systole,
+//     diastole, and starting/stopping
+//     the pulse
+
 import PubSub from './PubSub.js';
 import PressureWave from './PressureWave.js';
+import AirflowWave from './AirflowWave.js';
 
 let UserInput = {
 
@@ -22,8 +32,10 @@ let UserInput = {
   draw:          UserInput_draw
 }
 
+//  Initialize all input objects!  (Defined further down in this file)
 function UserInput_init() {
   BpmControls.init();
+  this.xValues = this.get_xValues();
   PressureControls.init();
   PulseButtons.init();
 }
@@ -53,8 +65,9 @@ function UserInput_update_bpm(new_bpm) {
 //  Draw all waves
 function UserInput_draw() {
   PressureWave.draw();
-  //       this.chart.data.labels = this.xValues;
-  //       this.chart.update();
+  AirflowWave.draw();
+  // this.chart.data.labels = this.xValues;
+  // this.chart.update();
 
 }
 
@@ -65,7 +78,7 @@ let BpmControls = {
     PubSub.subscribe('bpm', function(new_bpm) {
       $('#bpm_n').val(new_bpm);
       $('#bpm_r').val(new_bpm);
-let hz = Math.round(new_bpm * 100 / 60) / 100;
+      let hz = Math.round(new_bpm * 100 / 60) / 100;
   		$('#hz_n').val(hz);
 	  	$('#hz_r').val(hz);
 		  let period = Math.round(100 / hz) / 100;
@@ -95,12 +108,11 @@ let PressureControls = {
       slide: function(event, ui) {
         let diastole = ui.values[0];
         let systole = ui.values[1];
-        console.log(`Systole: ${systole}`);
         this.diastole = diastole;
         this.systole = systole;
         PubSub.publish('diastole', diastole);
         PubSub.publish('systole', systole);
-        this.draw();
+        //this.draw();
       }
     });
 
@@ -110,8 +122,8 @@ let PressureControls = {
       $('#diastole_n').val(new_diastole);
       $('#pressure-range').slider('values', 0, new_diastole);
       $('#systole_n').attr('min', new_diastole);  //  Diastole must be < systole
-      this.diastole = new_diastole;
-      this.draw();
+      UserInput.diastole = new_diastole;
+      UserInput.draw();
     });
     $('#diastole_n').on('input', function() { PubSub.publish('diastole', $('#diastole_n').val() ) });
 
@@ -121,8 +133,8 @@ let PressureControls = {
       $('#systole_n').val(new_systole);
       $('#pressure-range').slider('values', 1, new_systole);
       $('#diastole_n').attr('max', new_systole);  //  systole must be > systole
-      this.systole = new_systole;
-      this.draw();
+      UserInput.systole = new_systole;
+      UserInput.draw();
     });
     $('#systole_n').on('input', function() { PubSub.publish('systole', $('#systole_n').val() ) });
   }
@@ -137,4 +149,5 @@ let PulseButtons = {
 }
 
 export default UserInput;
+
 

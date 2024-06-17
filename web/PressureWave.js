@@ -1,8 +1,8 @@
 
 
-//     ###     ###                 ###     ###
-//    #   #   #     Pressure Wave     #   #   #
-// ###     ###                         ###     ###
+//     ---     ---                 ---     ---
+//    /   \   /     Pressure Wave     \   /   \
+// ---     ---                         ---     ---
 
 //          Manages the graph of aortic &
 //               ventricular pressure.
@@ -112,7 +112,6 @@ function PressureWave_pulse_step() {
   let _this = PressureWave;
   clock += Math.round(_this.step_size * 1000) / 1000;
   $('#clock').text(Math.round(clock*100)/100);
-  console.log(_this.chart.data.datasets);
   _this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
   _this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
   if (_this.pulse_i < UserInput.xValues.length - 1) {
@@ -139,7 +138,6 @@ function PressureWave_stop_pulse() {
 
 //
 function PressureWave_init() {
-  UserInput.xValues = UserInput.get_xValues();
 
   let fontColor = 'white';
   let gridlineColor = '#333';
@@ -199,7 +197,7 @@ function PressureWave_init() {
         yAxes: [{
           scaleLabel: {
             display: true,
-               labelString: 'Pressure (mmHg)',
+            labelString: 'Pressure (mmHg)',
             fontColor: fontColor
           },
           ticks: {
@@ -218,7 +216,7 @@ function PressureWave_init() {
             fontColor: fontColor,
             //  This hides unlabelled x-values. See const label_step
             callback: function(value, index, values) {
-              let scaled_step = _this.label_step * 1000;
+              let scaled_step = UserInput.label_step * 1000;
               if (Math.round(value * 1000) % scaled_step == 0) {
                 return Math.round(value * 1000) / 1000;
               } else {

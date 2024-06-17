@@ -48,15 +48,10 @@ function App_change_mode(new_mode) {
   $(`#${this.mode}-btn`).addClass('active');
   $(`#${this.mode}`).css('display', 'block');
   if (this.mode == 'waveform') {
-    PressureWave.init();
-  	pubsub.publish( 'bpm', $('#bpm_r').val() );
-//  	pubsub.publish( 'diastole', $('#diastole_r').val() );
-//  	pubsub.publish( 'systole', $('#systole_r').val() );
-    PressureWave.draw();
-    console.log(PressureWave.chart);
 
-    //AirflowWave.init();
-    //AirflowWave.draw();
+    PressureWave.init();
+    AirflowWave.init();
+  	pubsub.publish( 'bpm', $('#bpm_r').val() ); //  This draws the waves
   }
 }
 

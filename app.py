@@ -1,11 +1,12 @@
-  
+#!/usr/bin/python
 import eel                  # Eel connects js with py
 from gpiozero import LED    # Simple LED on/off lib
 from time import sleep      # Timing of LEDs
 import RPi.GPIO as GPIO     # For PWM
 import threading            # For interrupts
+import os                   # For filepaths
 
-eel.init('web')
+eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
 leds = {          # LED variables for GPIO pin numbers (not board numbers) for LED library
   "red": {

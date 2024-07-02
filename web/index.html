@@ -16,98 +16,103 @@
 </head>
 
 <body>
-
+  <!--  Contains the whole app!  -->
   <div id="panel-container">
-    <div id="controls">
+
+    <!--  The left panel, with controls mostly  -->
+    <div id="left-panel">
+
       <div class="topnav">
-        <a id="waveform-btn" style="active">Waveform</a>
-        <a id="calibrate-btn">Calibrate</a>
+        <a id="waveform-btn" style="active"><img src="./assets/graph-i.svg"/>Waveform</a>
+        <a id="calibrate-btn"><img src="./assets/calibrate-i.svg"/> Calibrate</a>
       </div>
 
-
-      <!--  Button to toggle pulse  -->
-      <div id="pulse-btns">
-        <button id="start-pulse"> &#9654; Start pulse</button>
-        <button id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
-        &nbsp;<div id="clock">0:00</div>
-      </div>
-
-      <!--  Container for all rate and period inputs -->
-      <div id="rate-and-period">
-  
-        <!--  Heart rate (bpm) input -->
-        <label>Heart rate (bpm):</label>
-        <p class="input-container">
-          <span>
-            <span class="range-labels">
-              <input type="range" min="30" max="200" id="bpm_r" />
-              <label class="min">30</label>
-              <label class="max">200</label>
-            </span>
-            <input type="number" min="30" max="200" id="bpm_n" />
-          </span>
-        </p>
-
-        <!--  Heart rate (Hz)  -->
-        <label>Heart rate (beats / sec) (Hz): </label>
-        <p class="input-container">
-          <span>
-            <span class="range-labels">
-              <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r" />
-              <label class="min">0.50</label>
-              <label class="max">3.33</label>
-            </span>
-            <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n" />
-          </span>
-        </p>
-
-        <!--  Heart rate period (s)  -->
-        <label>Period:</label>
-        <p class="input-container">
-          <span>
-            <span class="range-labels">
-              <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
-              <label class="min">0.3</label>
-              <label class="max">2</label>
-            </span>
-            <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
-          </span>
-        </p>
-
-      </div> <!--  End rate and period container -->
-
-      <!--  Container for pressures -->
-      <div id="pressures">
-        
-        <br/></br>
-        <div class="input-container" style="width:250px;">
-          <label>Diastole and systole:</label>  
-          <div class="range-labels">
-            <div id="pressure-range"></div>
-            <label class="min">30</label>
-            <label class="max">210</label>
-          </div>
-        </div><br/>
-        
-        <div class="input-container">
-          <label>Diastole (mmHg):</label>
-          <input type="number" min="60" max="110" value="80" id="diastole_n" />
-        </div><br/>
-
-        <div class="input-container">
-          <label>Systole (mmHg):</label>
-          <input type="number" min="90" max="210" value="120" id="systole_n" />
+      <!--                             -->
+      <!--  WAVEFORM TESTING CONTROLS  -->
+      <!--                             -->
+      <div id="waveform-left">
+        <!--  Button to toggle pulse  -->
+        <div id="pulse-btns">
+          <button id="start-pulse"> &#9654; Start pulse</button>
+          <button id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
+          &nbsp;<div id="clock">0:00</div>
         </div>
 
-      </div>  <!--  End pressure container  -->
+        <!--  Container for all rate and period inputs -->
+        <div id="rate-and-period">
+    
+          <!--  Heart rate (bpm) input -->
+          <label>Heart rate (bpm):</label>
+          <p class="input-container">
+            <span>
+              <span class="range-labels">
+                <input type="range" min="30" max="200" id="bpm_r" />
+                <label class="min">30</label>
+                <label class="max">200</label>
+              </span>
+              <input type="number" min="30" max="200" id="bpm_n" />
+            </span>
+          </p>
 
-    </div>
-    <div id="graphs">
-      <!--                            -->
-      <!--  MANUAL TESTING INTERFACE  --> 
-      <!--                            -->
-      <div id="manual" style="display: none">
-        <h2>Manual testing</h2>
+          <!--  Heart rate (Hz)  -->
+          <!--<label>Heart rate (beats / sec) (Hz): </label>
+          <p class="input-container">
+            <span>
+              <span class="range-labels">
+                <input type="range" min="0.5" max="3.33" step="0.01" id="hz_r" />
+                <label class="min">0.50</label>
+                <label class="max">3.33</label>
+              </span>
+              <input type="number" min="0.67" max="1.67" step="0.01" id="hz_n" />
+            </span>
+          </p>-->
+
+          <!--  Heart rate period (s)  -->
+          <label>Period:</label>
+          <p class="input-container">
+            <span>
+              <span class="range-labels">
+                <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
+                <label class="min">0.3</label>
+                <label class="max">2</label>
+              </span>
+              <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
+            </span>
+          </p>
+
+        </div> <!--  End rate and period container -->
+
+        <!--  Container for pressures -->
+        <div id="pressures">
+          
+          <br/></br>
+          <div class="input-container" style="width:250px;">
+            <label>Diastole and systole:</label>  
+            <div class="range-labels">
+              <div id="pressure-range"></div>
+              <label class="min">30</label>
+              <label class="max">210</label>
+            </div>
+          </div><br/>
+          
+          <div class="input-container">
+            <label>Diastole (mmHg):</label>
+            <input type="number" min="60" max="110" value="80" id="diastole_n" />
+          </div><br/>
+
+          <div class="input-container">
+            <label>Systole (mmHg):</label>
+            <input type="number" min="90" max="210" value="120" id="systole_n" />
+          </div>
+
+        </div>  <!--  End pressure container  -->
+
+      </div> <!--  End waveform left panel -->
+
+      <!--                             -->
+      <!--    CALIBRATE LEFT PANEL     -->
+      <!--                             -->
+      <div id="calibrate-left" style="display: none">
         <p class="input-container">
           Open inflow valve 
           <span>
@@ -129,6 +134,14 @@
         <button onclick="toggle_LED('red')"> Toggle LED 1</button>
         <button onclick="toggle_LED('blue')"> Toggle LED 2</button>
       </div>
+    
+    </div> <!--  End of left panel  -->
+
+    <!--  The right panel, with graphs mostly -->
+    <div id="right-panel">
+      <!--                            -->
+      <!--  MANUAL TESTING INTERFACE  --> 
+      <!--                            -->
 
       <!--                             -->
       <!--  WAVEFORM TESTING INTERFACE -->
@@ -139,8 +152,8 @@
         <canvas id="airflow-graph"></canvas>
       </div>
 
+    </div> <!--  End right panel -->
 
-    </div>
   </div>
 </body>
 

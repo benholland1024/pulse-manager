@@ -71,7 +71,7 @@ function UserInput_draw() {
 
 }
 
-
+//  Object representing BPM controls (including bpm, hz, and period)
 let BpmControls = {
   init: function () {
     //  Reactive bpm
@@ -95,7 +95,7 @@ let BpmControls = {
   }
 }
 
-
+//  Object representing pressure controls (including systole and diastole)
 let PressureControls = {
 
   init: function() {

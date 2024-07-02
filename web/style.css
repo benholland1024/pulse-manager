@@ -25,7 +25,7 @@ body {
 }
 
 /*  Left panel  */
-#controls {
+#left-panel {
   height:     100vh;
   width:      35vw;
   padding:    10px;
@@ -37,7 +37,7 @@ body {
 }
 
 /*  Right panel  */
-#graphs {
+#right-panel {
   height: 100vh;
   width: 65vw;
   padding: 10px;
@@ -105,7 +105,7 @@ input[type="range"] {
   right: 10px;
 }
 
-/***  TOP NAV BAR STYLING
+/***  TOP NAV BAR STYLING                 */
 
 /*  Add a black background color to the top navigation */
 .topnav {
@@ -119,6 +119,8 @@ input[type="range"] {
 }
 /*  Style the links inside the navigation bar */
 .topnav a {
+  display: flex;
+  align-items: center;
   float: left;
   color: #f2f2f2;
   text-align: center;
@@ -140,6 +142,15 @@ input[type="range"] {
   background-color: #556;
   color: white;
 }
+/*  SVG icons in top nav                   */
+.topnav img {
+  width: 18px;
+  height: 18px;
+  fill: rgba(255,255,255,0.5);
+}
+
+
+/***  UI-SLIDER STYLING             */
 
 /*  For the pressure slider, through jquery-ui  */
 .ui-slider {

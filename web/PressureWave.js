@@ -140,7 +140,7 @@ function PressureWave_stop_pulse() {
 function PressureWave_init() {
 
   let fontColor = 'white';
-  let gridlineColor = '#333';
+  let gridLineColor = 'rgba(255,255,255,0.1)';
   let _this = this; //  To refer to PressureWave and not Chart
 
   this.chart = new Chart("pressure-graph", {
@@ -200,6 +200,9 @@ function PressureWave_init() {
             labelString: 'Pressure (mmHg)',
             fontColor: fontColor
           },
+          gridLines: {
+            color: gridLineColor
+          },
           ticks: {
             fontColor: fontColor,
             suggestedMin: 0,
@@ -212,10 +215,14 @@ function PressureWave_init() {
             labelString: 'Time (s)',
             fontColor: fontColor
           },
+          gridLines: {
+            color: gridLineColor
+          },
           ticks: {
             fontColor: fontColor,
             //  This hides unlabelled x-values. See const label_step
             callback: function(value, index, values) {
+              return value;
               let scaled_step = UserInput.label_step * 1000;
               if (Math.round(value * 1000) % scaled_step == 0) {
                 return Math.round(value * 1000) / 1000;

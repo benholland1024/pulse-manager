@@ -1,4 +1,15 @@
 #!/usr/bin/python
+#
+#  This file starts the user interface!
+#  It also lets the UI control the circuit:
+#
+#    Ground ◄────────────────────────────────────────────────────────┐
+#                                                                    │
+#    Pin 32 ─────► 8k resistor ──► red LED  ──► open inflow valve ───┤
+#                                                                    │
+#    Pin 33 ─────► 8k resistor ──► blue LED ──► open outflow valve ──┘
+
+
 import eel                  # Eel connects js with py
 from gpiozero import LED    # Simple LED on/off lib
 from time import sleep      # Timing of LEDs
@@ -47,18 +58,18 @@ def start_PWM(period):
   INFLOW_pwm.start(0)
 
   # Set up outflow pin
-  GPIO.setup(OUTFLOW_PIN, GPIO.OUT)
-  OUTFLOW_pwm = GPIO.PWM(OUTFLOW_PIN, 1000)
-  OUTFLOW_pwm.start(100)
+  #GPIO.setup(OUTFLOW_PIN, GPIO.OUT)
+  #OUTFLOW_pwm = GPIO.PWM(OUTFLOW_PIN, 1000)
+  #OUTFLOW_pwm.start(0)
 
   while pwm:
     for duty in range(0,101,1):
       INFLOW_pwm.ChangeDutyCycle(duty)      # provide duty cycle in the range 0-100
-      OUTFLOW_pwm.ChangeDutyCycle(duty)
+      #OUTFLOW_pwm.ChangeDutyCycle(duty)
       sleep(0.025)
     for duty in range(100,-1,-1):
       INFLOW_pwm.ChangeDutyCycle(duty)      # provide duty cycle in the range 0-100
-      OUTFLOW_pwm.ChangeDutyCycle(duty)
+      #OUTFLOW_pwm.ChangeDutyCycle(duty)
       sleep(0.025)
 
 #  Stop the LEDs from pulsing
@@ -73,4 +84,4 @@ def on_close(url, open_websockets):
     GPIO.cleanup()
     exit()
 
-eel.start('index.html', close_callback=on_close, size=(800,480))
+eel.start('index.html', close_callback=on_close, size=(800,400))

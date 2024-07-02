@@ -37,16 +37,24 @@ import pubsub from './PubSub.js';
 let App = {
   mode: 'waveform',  //  Options: 'manual', 'waveform'
 
-  change_mode: App_change_mode,
+  init:         App_init,
+  change_mode:  App_change_mode,
+}
+
+//
+function App_init() {
+  this.change_mode('waveform');
+  $('#calibrate-btn').on('click', function() { App.change_mode('calibrate'); });
 }
 
 //  Changes the mode (this toggles between two UI interfaces)
 function App_change_mode(new_mode) {
+  console.log("Changing to " + new_mode);
   $(`#${this.mode}-btn`).removeClass('active');
-  $(`#${this.mode}`).css('display', 'none');
+  $(`#${this.mode}-left`).css('display', 'none');
   this.mode = new_mode;
   $(`#${this.mode}-btn`).addClass('active');
-  $(`#${this.mode}`).css('display', 'block');
+  $(`#${this.mode}-left`).css('display', 'block');
   if (this.mode == 'waveform') {
 
     PressureWave.init();
@@ -60,20 +68,7 @@ function App_change_mode(new_mode) {
 function boot() {
   console.log('Pulse manager loaded! Hello! <3');
 
-	//  All these are setting up reactive data!
-  pubsub.subscribe('inflow', function(new_data) {    //  Link slider to number picker
-    $('#inflow_n').val(new_data);
-    $('#inflow_r').val(new_data);
-  });
-  pubsub.publish( 'inflow', $('#inflow_r').val() );
-
-  //  Reactive outflow
-  pubsub.subscribe('outflow', function(new_data) {
-    $('#outflow_n').val(new_data);
-    $('#outflow_r').val(new_data);
-  });
-  pubsub.publish( 'outflow', $('#outflow_r').val() );
-
+  App.init();
   UserInput.init();
 
   App.change_mode(App.mode);

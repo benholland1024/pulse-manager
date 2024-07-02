@@ -23,12 +23,14 @@ leds = {          # LED variables for GPIO pin numbers (not board numbers) for L
   "red": {
     "board": 32,
     "gpio": 12,
-    "led": LED(12)
+    "led": LED(12),
+    "state": False
   },
   "blue": {
     "board": 33,
     "gpio": 13,
-    "led": LED(13)
+    "led": LED(13),
+    "state": False
   }
 }
 pwm = True
@@ -36,11 +38,21 @@ pwm = True
 INFLOW_PIN = 32   # RED (based on current hardware)
 OUTFLOW_PIN = 33  # BLUE
 
+#  This fires when the program first runs.
+def boot():
+  GPIO.setwarnings(False)
+  GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
+  GPIO.setup(INFLOW_PIN, GPIO.OUT)
+  GPIO.setup(OUTFLOW_PIN, GPIO.OUT)
+#  GPIO.output(INFLOW_PIN, True)
+#  print("Set 32 to high!")
+boot()
 
 @eel.expose
 def toggle_LED(color):
-  led = leds[color]['led']
-  led.toggle()
+  pin_num = leds[color]['board']
+  leds[color]['state'] = not leds[color]['state'];
+  GPIO.output(pin_num, leds[color]['state']);
   sleep(1)
   #LED(pin_num).toggle()
   print("Toggled " + color + " pin")
@@ -49,8 +61,6 @@ def toggle_LED(color):
 @eel.expose
 def start_PWM(period):
   print('Starting pwm')
-  GPIO.setwarnings(False)
-  GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
 
   # Set up inflow pin
   GPIO.setup(INFLOW_PIN, GPIO.OUT)

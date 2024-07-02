@@ -29,5 +29,10 @@ set tabstospaces
 <br/><br/><br/><br/>
 
 ## What is a pulse duplicator?
-A pulse duplicator is a device used to duplicate the pulsing flow of the human heart. It's used to research the conditions of heart disease.  
+A [pulse duplicator](https://en.wikipedia.org/wiki/Pulse_duplicator) is a device used to duplicate the pulsing flow of the human heart. It's used to research the conditions of heart disease.  
 Some examples are described in [this paper](https://scholar.sun.ac.za/server/api/core/bitstreams/bccb60ab-9c5d-49c6-a285-ae7c1f789fe6/content), among others.
+
+<br/><br/><br/><br/>
+
+## References
+This app uses icons found on [svgrepo.com](https://www.svgrepo.com).

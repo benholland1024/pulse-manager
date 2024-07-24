@@ -5,7 +5,7 @@
 
 //    Manages user input: BPM, systole,
 //     diastole, and starting/stopping
-//     the pulse
+//     the pulse. Also, calibration tools.
 
 import PubSub from './PubSub.js';
 import PressureWave from './PressureWave.js';
@@ -27,8 +27,8 @@ let UserInput = {
 
   //  Methods
   init:          UserInput_init,
-  get_xValues:   UserInput_get_xValues,
-  update_bpm:    UserInput_update_bpm,
+  get_xValues:   UserInput_get_xValues,  //  Used in update_bpm
+  update_bpm:    UserInput_update_bpm,	 //  Fired when bpm controls change
   draw:          UserInput_draw
 }
 
@@ -38,6 +38,7 @@ function UserInput_init() {
   this.xValues = this.get_xValues();
   PressureControls.init();
   PulseButtons.init();
+  ManualControls.init();
 }
 
 //  Returns a list of xValues, based on bpm
@@ -71,7 +72,9 @@ function UserInput_draw() {
 
 }
 
+//////////////////////////////////////////////////////////////////////
 //  Object representing BPM controls (including bpm, hz, and period)
+//////////////////////////////////////////////////////////////////////
 let BpmControls = {
   init: function () {
     //  Reactive bpm
@@ -95,7 +98,9 @@ let BpmControls = {
   }
 }
 
+//////////////////////////////////////////////////////////////////////
 //  Object representing pressure controls (including systole and diastole)
+//////////////////////////////////////////////////////////////////////
 let PressureControls = {
 
   init: function() {
@@ -140,11 +145,31 @@ let PressureControls = {
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////
+//  Object representing start / stop pulse buttons
+//////////////////////////////////////////////////////////////////////
 let PulseButtons = {
   init: function() {
     $('#start-pulse').on('click', function() { PressureWave.start_pulse(); });
     $('#stop-pulse').on('click', function() { PressureWave.stop_pulse(); });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing manual open/close controls
+//////////////////////////////////////////////////////////////////////
+let ManualControls = {
+  init: function() {
+    $('#toggle-1').on("click", function() { 
+      eel.toggle_LED('blue');
+      let current_status = $('#status-1').text();
+      $('#status-1').text(current_status == 'off' ? 'on' : 'off');
+    });
+    $('#toggle-2').on("click", function() {
+      eel.toggle_LED('red');
+      let current_status = $('#status-2').text();
+      $('#status-2').text(current_status == 'off' ? 'on' : 'off');
+    });
   }
 }
 

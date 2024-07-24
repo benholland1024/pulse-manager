@@ -53,7 +53,6 @@ def toggle_LED(color):
   pin_num = leds[color]['board']
   leds[color]['state'] = not leds[color]['state'];
   GPIO.output(pin_num, leds[color]['state']);
-  sleep(1)
   #LED(pin_num).toggle()
   print("Toggled " + color + " pin")
 

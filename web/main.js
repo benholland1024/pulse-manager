@@ -43,6 +43,7 @@ let App = {
 
 //
 function App_init() {
+  $('#waveform-btn').on('click', function() { App.change_mode('waveform'); });
   $('#calibrate-btn').on('click', function() { App.change_mode('calibrate'); });
 }
 
@@ -70,15 +71,11 @@ function boot() {
   App.init();
   UserInput.init();
   App.change_mode(App.mode);
-  $('#toggle-1').on("click", function() { toggle_LED('blue'); });
-  $('#toggle-2').on("click", function() { toggle_LED('red'); });
+  
 }
 boot();
 
-//  Test function to toggle LEDs.
-function toggle_LED(pin_num) {
-  eel.toggle_LED(pin_num);
-}
+
 
 //  Example of how to expose JS functions to Python (not used
 eel.expose(prompt_alerts);

@@ -64,6 +64,7 @@ function AirflowWave_draw() {
   this.inflow_faded = this.get_inflow_all();
   this.chart.data.datasets[0].data = this.inflow;
   this.chart.data.datasets[1].data = this.inflow_faded;  //  faded datasets
+  this.chart.data.labels = UserInput.xValues;
   this.chart.update();
 }
 
@@ -111,7 +112,7 @@ function AirflowWave_stop_pulse() {
 function AirflowWave_init() {
 
   let fontColor = 'white';
-  let gridlineColor = '#333';
+  let gridLineColor = 'rgba(255,255,255,0.1)';
   let _this = this; //  To refer to AirflowWave and not Chart
 
   this.chart = new Chart("airflow-graph", {
@@ -159,6 +160,9 @@ function AirflowWave_init() {
                labelString: 'Air inflow (cm<sup>3</sup>/s)',
             fontColor: fontColor
           },
+          gridLines: {
+            color: gridLineColor
+          },
           ticks: {
             fontColor: fontColor,
             suggestedMin: -15,
@@ -171,16 +175,20 @@ function AirflowWave_init() {
             labelString: 'Time (s)',
             fontColor: fontColor
           },
+          gridLines: {
+            color: gridLineColor
+          },
           ticks: {
             fontColor: fontColor,
             //  This hides unlabelled x-values. See const label_step
             callback: function(value, index, values) {
-              let scaled_step = UserInput.label_step * 1000;
+              return value;
+              /*let scaled_step = UserInput.label_step * 1000;
               if (Math.round(value * 1000) % scaled_step == 0) {
                 return Math.round(value * 1000) / 1000;
               } else {
                 return null;
-              }
+              }*/
             }
           }
 

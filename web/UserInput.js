@@ -20,6 +20,7 @@ let UserInput = {
 
   //  INDIRECTLY CONTROLLABLE:
   xValues:       [],         //  A list of each x value plotted
+  clock:         0,
 
   //  CONSTANTS:
   step_size:     0.025,      //  The interval between graph points
@@ -150,10 +151,45 @@ let PressureControls = {
 //////////////////////////////////////////////////////////////////////
 let PulseButtons = {
   init: function() {
-    $('#start-pulse').on('click', function() { PressureWave.start_pulse(); });
-    $('#stop-pulse').on('click', function() { PressureWave.stop_pulse(); });
-  }
+    $('#start-pulse').on('click', function() { PulseButtons.start_pulse(); });
+    $('#stop-pulse').on('click', function() { PulseButtons.stop_pulse(); });
+  },
+  
+  pulse_loop:   undefined,
+  
+  start_pulse:  PulseButtons_start_pulse,
+  stop_pulse:   PulseButtons_stop_pulse,
+  pulse_step:   PulseButtons_pulse_step
 }
+
+function PulseButtons_start_pulse() {
+  //this.pulse_loop = setInterval(this.pulse_step, UserInput.step_size * 1000);
+  $('#stop-pulse').css('display', 'block');
+  $('#start-pulse').css('display', 'none');
+  PressureWave.start_pulse();
+  eel.start_pulse(UserInput.bpm);
+}
+function PulseButtons_stop_pulse() {
+  //clearInterval(this.pulse_loop);
+  $('#stop-pulse').css('display', 'none');
+  $('#start-pulse').css('display', 'block');
+  UserInput.clock = 0;
+  PressureWave.stop_pulse();
+  eel.stop_pulse();
+}
+function PulseButtons_pulse_step() {
+  UserInput.clock += UserInput.step_size;
+  $('#clock').text(Math.round(UserInput.clock*100)/100);
+  PressureWave.pulse_step();
+}
+//  How to expose JS functions to Python 
+eel.expose(pulse_step);
+function pulse_step(time) {
+  console.log(time)
+  PulseButtons.pulse_step()
+}
+
+
 
 //////////////////////////////////////////////////////////////////////
 //  Object representing manual open/close controls
@@ -161,12 +197,12 @@ let PulseButtons = {
 let ManualControls = {
   init: function() {
     $('#toggle-1').on("click", function() { 
-      eel.toggle_LED('blue');
+      eel.toggle_LED('33');
       let current_status = $('#status-1').text();
       $('#status-1').text(current_status == 'off' ? 'on' : 'off');
     });
     $('#toggle-2').on("click", function() {
-      eel.toggle_LED('red');
+      eel.toggle_LED('32');
       let current_status = $('#status-2').text();
       $('#status-2').text(current_status == 'off' ? 'on' : 'off');
     });

@@ -25,7 +25,7 @@
 
 
 //
-//    --^v--^v--  main.js : This file runs when the app loads  --^v--^v--
+//   --^v--^v--  main.js : This file runs when the app loads  --^v--^v--
 //
 
 import PressureWave from './PressureWave.js';

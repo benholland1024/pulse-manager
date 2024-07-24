@@ -100,18 +100,11 @@ function PressureWave_start_pulse() {
   this.chart.data.datasets[0].data = this.ap;
   this.chart.data.datasets[1].data = this.vp;
   this.chart.update();
-  this.pulse_loop = setInterval(this.pulse_step, Math.round(this.step_size * 1000));
-  $('#stop-pulse').css('display', 'block');
-  $('#start-pulse').css('display', 'none');
-  eel.start_PWM(12);
 }
 
-let clock = 0;
 //  Runs every few milliseconds after "start_pulse()"
 function PressureWave_pulse_step() {
   let _this = PressureWave;
-  clock += Math.round(_this.step_size * 1000) / 1000;
-  $('#clock').text(Math.round(clock*100)/100);
   _this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
   _this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
   if (_this.pulse_i < UserInput.xValues.length - 1) {
@@ -131,9 +124,6 @@ function PressureWave_stop_pulse() {
   clearInterval(this.pulse_loop);
   this.pulse_i = 0;
   this.draw();
-  $('#start-pulse').css('display', 'block');
-  $('#stop-pulse').css('display','none');
-  eel.stop_PWM(12);
 }
 
 //

@@ -17,6 +17,7 @@ let UserInput = {
   bpm:           100,        //  Beats per minute
   diastole:      80,         //  Pressure at diastole in mmHg
   systole:       120,        //  Pressure at systole
+  show_pulse:    false,      //  Animate the pulse -- switch in Settings
 
   //  INDIRECTLY CONTROLLABLE:
   xValues:       [],         //  A list of each x value plotted
@@ -166,27 +167,40 @@ function PulseButtons_start_pulse() {
   //this.pulse_loop = setInterval(this.pulse_step, UserInput.step_size * 1000);
   $('#stop-pulse').css('display', 'block');
   $('#start-pulse').css('display', 'none');
-  PressureWave.start_pulse();
+  if (UserInput.show_pulse) {
+    PressureWave.start_pulse();
+    AirflowWave.start_pulse();
+  }
   eel.start_pulse(UserInput.bpm);
 }
 function PulseButtons_stop_pulse() {
   //clearInterval(this.pulse_loop);
   $('#stop-pulse').css('display', 'none');
   $('#start-pulse').css('display', 'block');
-  UserInput.clock = 0;
-  PressureWave.stop_pulse();
+  if (UserInput.show_pulse) {
+    PressureWave.stop_pulse();
+    AirflowWave.stop_pulse();
+  }
   eel.stop_pulse();
+  
 }
 function PulseButtons_pulse_step() {
   UserInput.clock += UserInput.step_size;
   $('#clock').text(Math.round(UserInput.clock*100)/100);
-  PressureWave.pulse_step();
+  if (UserInput.show_pulse) {
+    PressureWave.pulse_step();
+    AirflowWave.pulse_step();
+  }
 }
 //  How to expose JS functions to Python 
 eel.expose(pulse_step);
 function pulse_step(time) {
-  console.log(time)
   PulseButtons.pulse_step()
+}
+eel.expose(reset_clock);
+function reset_clock() {
+  UserInput.clock = 0;
+  $('#clock').text('0.00')
 }
 
 
@@ -197,14 +211,19 @@ function pulse_step(time) {
 let ManualControls = {
   init: function() {
     $('#toggle-1').on("click", function() { 
-      eel.toggle_LED('33');
+      eel.toggle_pin('33');
       let current_status = $('#status-1').text();
       $('#status-1').text(current_status == 'off' ? 'on' : 'off');
     });
     $('#toggle-2').on("click", function() {
-      eel.toggle_LED('32');
+      eel.toggle_pin('32');
       let current_status = $('#status-2').text();
       $('#status-2').text(current_status == 'off' ? 'on' : 'off');
+    });
+    $('#toggle-3').on("click", function() {
+      eel.toggle_pin('31');
+      let current_status = $('#status-3').text();
+      $('#status-3').text(current_status == 'off' ? 'on' : 'off');
     });
   }
 }

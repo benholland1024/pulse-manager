@@ -17,7 +17,6 @@ let PressureWave = {
   vp_faded:   [],
   pulse_i:    0,          //  Which x value is the pulse currently on?
   chart:      undefined,  //  Stores a ChartJS object
-  pulse_loop: undefined,  //  Stores a setInterval object
 
   //  Methods:
   get_ap_all:    PressureWave_get_ap_all,
@@ -121,7 +120,6 @@ function PressureWave_pulse_step() {
 
 //  Stops the pulse loop
 function PressureWave_stop_pulse() {
-  clearInterval(this.pulse_loop);
   this.pulse_i = 0;
   this.draw();
 }
@@ -179,7 +177,7 @@ function PressureWave_init() {
       },
       title: {
         display: true,
-        text: "Current waveform:",
+        text: "Planned waveform:",
         fontSize: 16,
         fontColor: fontColor,
       },

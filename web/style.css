@@ -116,6 +116,8 @@ input[type="range"] {
   margin-left: -10px;
   margin-bottom: 20px;
   margin-right: -10px;
+  display: flex;
+  flex-direction: row;
 }
 /*  Style the links inside the navigation bar */
 .topnav a {
@@ -129,7 +131,7 @@ input[type="range"] {
   padding: 10px;
   box-sizing: border-box;
   position: relative;
-  width: 50%;
+  /*width: 50%;*/
   text-decoration: none;
   font-size: 1em;
   cursor: pointer;
@@ -139,8 +141,16 @@ input[type="range"] {
   background-color: #dde;
   color: black;
 }
+.topnav a span {
+  display: none;
+  padding-left: 5px;
+}
+.topnav a.active span {
+  display: inline;
+}
 /*  Add a color to the active/current link */
 .topnav a.active {
+  flex-grow: 1;
   opacity: 1.0;
   background: #334;
   color: white;

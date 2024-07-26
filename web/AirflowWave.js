@@ -16,7 +16,6 @@ let AirflowWave = {
                           //    (y value list, the same size as UserInput.xValues)
   inflow_faded: [],
   chart:        undefined,  //  Stores a ChartJS object
-  pulse_loop:   undefined,  //  Stores a setInterval object
 
   //  CONSTANTS:  See UserInput
   step_size: 0.025,     //  The interval between graph points
@@ -74,18 +73,11 @@ function AirflowWave_start_pulse() {
   this.chart.data.datasets[0].data = this.inflow;
   this.chart.data.datasets[1].data = this.inflow_faded;
   this.chart.update();
-  this.pulse_loop = setInterval(this.pulse_step, Math.round(this.step_size * 1000));
-  $('#stop-pulse').css('display', 'block');
-  $('#start-pulse').css('display', 'none');
-  eel.start_PWM(12);
 }
 
-let clock = 0;
 //  Runs every few milliseconds after "start_pulse()"
 function AirflowWave_pulse_step() {
   let _this = AirflowWave;
-  clock += Math.round(_this.step_size * 1000) / 1000;
-  $('#clock').text(Math.round(clock*100)/100);
   console.log(_this.chart.data.datasets);
   _this.chart.data.datasets[0].data.push( _this.get_inflow_value( _this.pulse_i ) );
   if (_this.pulse_i < UserInput.xValues.length - 1) {
@@ -100,12 +92,8 @@ function AirflowWave_pulse_step() {
 
 //  Stops the pulse loop
 function AirflowWave_stop_pulse() {
-  clearInterval(this.pulse_loop);
   this.pulse_i = 0;
   this.draw();
-  $('#start-pulse').css('display', 'block');
-  $('#stop-pulse').css('display','none');
-  eel.stop_PWM(12);
 }
 
 //

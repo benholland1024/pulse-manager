@@ -45,6 +45,8 @@ let App = {
 function App_init() {
   $('#waveform-btn').on('click', function() { App.change_mode('waveform'); });
   $('#calibrate-btn').on('click', function() { App.change_mode('calibrate'); });
+  $('#settings-btn').on('click', function() { App.change_mode('settings'); });
+
 }
 
 //  Changes the mode (this toggles between two UI interfaces)

@@ -2,12 +2,12 @@
 #
 #  This file starts the user interface!
 #  It also lets the UI control the circuit:
-#             this is outdated:
-#    Ground ◄────────────────────────────────────────────────────────┐
-#                                                                    │
-#    Pin 32 ─────► 8k resistor ──► red LED  ──► open inflow valve ───┤
-#                                                                    │
-#    Pin 33 ─────► 8k resistor ──► blue LED ──► open outflow valve ──┘
+#
+#    Ground ◄───────────────────────────────────────┐
+#                                                   │
+#    Pin 32 ─────► open inflow valve ───────────────┤
+#                                                   │
+#    Pin 33 ─────► open outflow valve near pocket ──┘
 
 
 import eel                  # Eel connects js with py
@@ -17,46 +17,36 @@ import os                   # For filepaths
 
 eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
-#leds = {          # LED variables for GPIO pin numbers (not board numbers) for LED library
-#  "red": {
-#    "board": 32,
-#    "gpio": 12,
-#    "state": False
-#  },
-#  "blue": {
-#    "board": 33,
-#    "gpio": 13,
-#    "state": False
-#  }
-#}
-pins = {
-  "31": False,
-  "32": False,
-  "33": False
+pins = {  #  The three pins used, and whether they're open
+  "31": False,    # Outflow near a
+  "32": False,    # Outflow near pockets
+  "33": False     # Air inflow
 }
-
-                  # These are labelled by BOARD pin #'s (not GPIO numbers) for pwm
-INFLOW_PIN = 32   # RED (based on current hardware)
-OUTFLOW_PIN = 33  # BLUE
 
 #  This fires when the program first runs.
 def boot():
   GPIO.setwarnings(False)
   GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
-  GPIO.setup(INFLOW_PIN, GPIO.OUT)
-  GPIO.setup(OUTFLOW_PIN, GPIO.OUT)
-#  GPIO.output(INFLOW_PIN, True)
-#  print("Set 32 to high!")
+  GPIO.setup(33, GPIO.OUT)
+  GPIO.setup(32, GPIO.OUT)
+  GPIO.setup(31, GPIO.OUT)
 boot()
+
+# Used in other functions to turn pins on/off by pin #, & record status
+def set_pin(pin_num, turn_on):
+  pins[pin_num] = turn_on; # turn_on can be True or False
+  GPIO.output(int(pin_num), turn_on);
+
+#
+#   The functions below are accessible in the JS!
+#
 
 #  Manually toggles specific GPIO lines
 @eel.expose
-def toggle_LED(pin_num):
-  pins[pin_num] = not pins[pin_num];
-  GPIO.output(int(pin_num), pins[pin_num]);
-  #LED(pin_num).toggle()
+def toggle_pin(pin_num):
+  set_pin(pin_num, not pins[pin_num]);
   print("Toggled pin " + pin_num + " to " + ('on' if pins[pin_num] else 'off'))
-  
+
 #  Starts the pulse at a specific bpm / period
 @eel.expose
 def start_pulse(bpm):
@@ -71,15 +61,14 @@ def start_pulse(bpm):
     period_count = 0;
     inflow = True
     while do_pulse:
-      GPIO.output(33, inflow);
-      GPIO.output(32, not inflow);
-      pins['33'] = inflow;
-      pins['32'] = not inflow;
-      eel.pulse_step(timer)
+      set_pin(33, inflow);
+      set_pin(32, not inflow);
+      set_pin(31, not inflow);
+      eel.pulse_step(timer)     # Calls a JS function in UserInput.js
       timer += 0.025
       period_count += 0.025
-      if (period_count >= period):
-        period_count -= period;
+      if (period_count >= round(period/2,2)):
+        period_count -= round(period/2,2);
         inflow = not inflow;
       eel.sleep(0.025)
       
@@ -90,10 +79,10 @@ def start_pulse(bpm):
 def stop_pulse():
   global do_pulse
   do_pulse = False
-  GPIO.output(33, False);
-  GPIO.output(32, True);
-  pins['33'] = False;
-  pins['32'] = True;
+  set_pin(33, False)
+  set_pin(32, True);
+  set_pin(31, True);
+  eel.reset_clock()  # Calls a JS function in UserInput.js
   
 
 

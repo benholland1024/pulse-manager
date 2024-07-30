@@ -19,12 +19,27 @@ python app.py
 
 ## Editing the Code
 
-The project also uses 2 spaces instead of tabs.  
-If you're coding on a RPI using `nano` (as I am), create a file called `~/.nanorc` and add:
+I recommend editing using the Geany app on the RPi.  
+Create a new project with the folder as the root.  
+In the settings, set tabs to create 2 spaces. 
+
+If you're coding on a RPI using `nano`, create a file called `~/.nanorc` and add:
 ```
 set tabsize 2
 set tabstospaces
 ```
+
+<br/><br/><br/><br/>
+
+## Running the Code
+
+The code can be run through the terminal with `python app.py`.  
+To create a file that can be double clicked to run the code, add a file called `pulse.sh` with this:  
+```bash
+#!/bin/bash
+/home/benholland/github/pulse-manager/app.py
+```
+Replace the 2nd line with the correct path to `app.py`. 
 
 <br/><br/><br/><br/>
 

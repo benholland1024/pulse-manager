@@ -10,10 +10,11 @@
 #    Pin 33 ─────► open outflow valve near pocket ──┘
 
 
-import eel                  # Eel connects js with py
-import RPi.GPIO as GPIO     # For PWM
-import threading            # For interrupts
-import os                   # For filepaths
+import eel                  # Connects js with py
+import RPi.GPIO as GPIO     # Activates pins!
+import threading            # Creates threads that can be interrupted
+import os                   # Formats absolute filepaths
+import mcp3008              # Reads data sensors using SPI  
 
 eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
@@ -23,6 +24,17 @@ pins = {  #  The three pins used, and whether they're open
   "33": False     # Air inflow
 }
 
+def check_pressure():
+  while True:
+    with mcp3008.MCP3008() as adc:
+      pressure = adc.read([mcp3008.CH0])
+      print(pressure)
+      eel.update_pressure(pressure)
+      flowrate = adc.read([mcp3008.CH1])
+      print(flowrate)
+      eel.update_flowrate(flowrate)
+    eel.sleep(1)
+      
 #  This fires when the program first runs.
 def boot():
   GPIO.setwarnings(False)
@@ -30,6 +42,7 @@ def boot():
   GPIO.setup(33, GPIO.OUT)
   GPIO.setup(32, GPIO.OUT)
   GPIO.setup(31, GPIO.OUT)
+  eel.spawn(check_pressure)
 boot()
 
 # Used in other functions to turn pins on/off by pin #, & record status

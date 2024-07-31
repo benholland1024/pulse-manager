@@ -31,6 +31,7 @@
 import PressureWave from './PressureWave.js';
 import AirflowWave from './AirflowWave.js';
 import UserInput from './UserInput.js';
+import SensorInput from './SensorInput.js';
 import pubsub from './PubSub.js';
 
 //  This object represents the entire app.

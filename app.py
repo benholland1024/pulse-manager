@@ -18,21 +18,50 @@ import mcp3008              # Reads data sensors using SPI
 
 eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
+  ##################################
+  ####     GLOBAL VARIABLES     ####
+  ##################################
+
 pins = {  #  The three pins used, and whether they're open
-  "31": False,    # Outflow near a
-  "32": False,    # Outflow near pockets
-  "33": False     # Air inflow
+  "31": False,      # Outflow near a
+  "32": False,      # Outflow near pockets
+  "33": False       # Air inflow
 }
 
+pulse_count = 0;    # Used to detect flow rate
+
+# Constantly check the pressure sensors. Called in boot()
 def check_pressure():
   while True:
     with mcp3008.MCP3008() as adc:
-      pressure = adc.read([mcp3008.CH0])
-      print(pressure)
-      eel.update_pressure(pressure)
-      flowrate = adc.read([mcp3008.CH1])
-      print(flowrate)
-      eel.update_flowrate(flowrate)
+      pressureV = adc.read([mcp3008.CH0])[0]
+      pressureV = pressureV * (3.3 / 1023) # Translates to volts (max 3.3v)
+      pressureV = round(pressureV, 2)
+      pressureKPa = round(pressureV - 1, 2)
+      pressureMmHg = round(pressureKPa * 7.50062, 2)
+      eel.update_pressure(pressureMmHg)
+      
+      #flowrate = adc.read([mcp3008.CH1])[0] * (3.3 / 1023)
+      #eel.update_flowrate(flowrate)
+      _log = "Pressure: " + str(pressureV) + "V, "
+      _log += str(pressureKPa) + "kPa, "
+      _log += str(pressureMmHg) + "mmHg"
+      print(_log)
+    eel.sleep(.1)
+  
+# Fires when the flow meter moves 1 rotation.  Called in boot()
+def detect_flow_pulse(channel):
+  global pulse_count
+  pulse_count += 1;
+  print('Flow pulse ' + str(pulse_count) + ' detected!')
+  
+def check_flow_rate():
+  global pulse_count
+  while True:
+    liters_per_min = pulse_count / 7.5;
+    eel.update_flowrate(liters_per_min)
+    print(str(liters_per_min) + " L/min")
+    pulse_count = 0;
     eel.sleep(1)
       
 #  This fires when the program first runs.
@@ -42,7 +71,10 @@ def boot():
   GPIO.setup(33, GPIO.OUT)
   GPIO.setup(32, GPIO.OUT)
   GPIO.setup(31, GPIO.OUT)
-  eel.spawn(check_pressure)
+  #eel.spawn(check_pressure)
+  GPIO.setup(36, GPIO.IN)
+  GPIO.add_event_detect(36, GPIO.RISING, callback=detect_flow_pulse)
+  eel.spawn(check_flow_rate)
 boot()
 
 # Used in other functions to turn pins on/off by pin #, & record status

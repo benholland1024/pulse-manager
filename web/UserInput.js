@@ -7,6 +7,16 @@
 //     diastole, and starting/stopping
 //     the pulse. Also, calibration tools.
 
+/*    Objects include:
+ *      - UserInput
+ *      - BpmControls
+ *      - PressureControls
+ *      - PulseButton
+ *      - ManualControls
+ *      - ShowPulseButton
+ * 
+ */
+
 import PubSub from './PubSub.js';
 import PressureWave from './PressureWave.js';
 import AirflowWave from './AirflowWave.js';
@@ -41,6 +51,7 @@ function UserInput_init() {
   PressureControls.init();
   PulseButtons.init();
   ManualControls.init();
+  ShowPulseButton.init();
 }
 
 //  Returns a list of xValues, based on bpm
@@ -224,6 +235,17 @@ let ManualControls = {
       eel.toggle_pin('31');
       let current_status = $('#status-3').text();
       $('#status-3').text(current_status == 'off' ? 'on' : 'off');
+    });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing "show pulse" toggle button
+//////////////////////////////////////////////////////////////////////
+let ShowPulseButton = {
+  init: function() {
+    $('#show-pulse').on("click", function() { 
+      UserInput.show_pulse = !UserInput.show_pulse;
     });
   }
 }

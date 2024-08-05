@@ -6,6 +6,13 @@ This project requires Python, and python packages [eel](https://github.com/pytho
 When installing, you may want to use a [venv](https://stackoverflow.com/questions/75602063/pip-install-r-requirements-txt-is-failing-this-environment-is-externally-mana/75696359#75696359)  
 (Or `pip install eel --break-system-packages` can be used)
 
+To get event detection working, you may need to run these two commands to update GPIO:
+```bash
+sudo apt remove python3-rpi.gpio
+sudo apt install python3-rpi-lgpio
+```
+<!-- Here's why: https://stackoverflow.com/questions/75542224/runtimeerror-failed-to-add-edge-detection-on-raspberrypi -->
+
 The project also uses [chartjs](https://www.chartjs.org/docs/2.9.4) version 2.9.4 and JQuery-UI. (no installation required -- a CDN is used.)  
 
 After cloning the project, run it:

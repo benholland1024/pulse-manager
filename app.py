@@ -32,7 +32,8 @@ pulse_count = 0;    # Used to detect flow rate
 
 # Constantly check the pressure sensors. Called in boot()
 def check_pressure():
-  while True:
+  global do_pulse
+  while do_pulse:
     with mcp3008.MCP3008() as adc:
       pressureV = adc.read([mcp3008.CH0])[0]
       pressureV = pressureV * (3.3 / 1023) # Translates to volts (max 3.3v)
@@ -57,7 +58,8 @@ def detect_flow_pulse(channel):
   
 def check_flow_rate():
   global pulse_count
-  while True:
+  global do_pulse
+  while do_pulse:
     liters_per_min = pulse_count / 7.5;
     eel.update_flowrate(liters_per_min)
     print(str(liters_per_min) + " L/min")
@@ -71,10 +73,10 @@ def boot():
   GPIO.setup(33, GPIO.OUT)
   GPIO.setup(32, GPIO.OUT)
   GPIO.setup(31, GPIO.OUT)
-  #eel.spawn(check_pressure)
+  
   GPIO.setup(36, GPIO.IN)
   GPIO.add_event_detect(36, GPIO.RISING, callback=detect_flow_pulse)
-  eel.spawn(check_flow_rate)
+  
 boot()
 
 # Used in other functions to turn pins on/off by pin #, & record status
@@ -97,6 +99,8 @@ def toggle_pin(pin_num):
 def start_pulse(bpm):
   global do_pulse
   do_pulse = True
+  eel.spawn(check_pressure)
+  eel.spawn(check_flow_rate)
   
   def pulse(bpm):
     hz = round(int(bpm) / 60, 2);

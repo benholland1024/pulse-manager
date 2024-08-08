@@ -12,8 +12,10 @@
  *      - BpmControls
  *      - PressureControls
  *      - PulseButton
- *      - ManualControls
- *      - ShowPulseButton
+ *      - GraphPicker
+ *      - ManualControls  (settings)
+ *      - ShowPulseButton (settings)
+ *      - 
  * 
  */
 
@@ -50,6 +52,7 @@ function UserInput_init() {
   this.xValues = this.get_xValues();
   PressureControls.init();
   PulseButtons.init();
+  GraphPicker.init();
   ManualControls.init();
   ShowPulseButton.init();
 }
@@ -175,7 +178,6 @@ let PulseButtons = {
 }
 
 function PulseButtons_start_pulse() {
-  //this.pulse_loop = setInterval(this.pulse_step, UserInput.step_size * 1000);
   $('#stop-pulse').css('display', 'block');
   $('#start-pulse').css('display', 'none');
   if (UserInput.show_pulse) {
@@ -185,7 +187,6 @@ function PulseButtons_start_pulse() {
   eel.start_pulse(UserInput.bpm);
 }
 function PulseButtons_stop_pulse() {
-  //clearInterval(this.pulse_loop);
   $('#stop-pulse').css('display', 'none');
   $('#start-pulse').css('display', 'block');
   if (UserInput.show_pulse) {
@@ -214,6 +215,25 @@ function reset_clock() {
   $('#clock').text('0.00')
 }
 
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing the graph picker dropdown
+//////////////////////////////////////////////////////////////////////
+let GraphPicker = {
+  init: function() {
+    $('#graph-picker').on('change', function() {
+      let new_graph = $('#graph-picker').val();
+      let graph_options = ['pressure', 'airflow', 'bloodflow'];
+      for (let i = 0; i < graph_options.length; i++) {
+        if (new_graph != graph_options[i]) {
+          $('#' + graph_options[i] + '-graph').css('display', 'none');
+        } else {
+          $('#' + graph_options[i] + '-graph').css('display', 'block');
+        }
+      }
+    });
+  }
+}
 
 
 //////////////////////////////////////////////////////////////////////

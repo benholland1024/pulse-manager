@@ -145,7 +145,7 @@ function AirflowWave_init() {
         yAxes: [{
           scaleLabel: {
             display: true,
-               labelString: 'Air inflow (cm<sup>3</sup>/s)',
+               labelString: 'Air inflow (mL/sec)',
             fontColor: fontColor
           },
           gridLines: {

@@ -24,7 +24,7 @@
 
       <div class="topnav">
         <a id="waveform-btn" style="active"><img src="./assets/graph-i.svg"/><span>Waveform</span></a>
-        <a id="calibrate-btn"><img src="./assets/calibrate-i.svg"/><span>Calibrate</span></a>
+        <a id="export-btn"><img src="./assets/save-i.svg"/><span>Export</span></a>
         <a id="settings-btn"><img src="./assets/settings-i.svg"/><span>Settings</span></a>
       </div>
 
@@ -32,26 +32,20 @@
       <!--  WAVEFORM LEFT PANEL        -->
       <!--                             -->
       <div id="waveform-left">
-        <!--  Button to toggle pulse  -->
-        <div id="pulse-btns">
-          <button id="start-pulse"> &#9654; Start pulse</button>
-          <button id="stop-pulse" style="display:none;"> &#9208; Stop pulse</button>
-          &nbsp;<div id="clock">0:00</div>
-        </div>
 
         <!--  Container for all rate and period inputs -->
         <div id="rate-and-period">
     
           <!--  Heart rate (bpm) input -->
           <label>Heart rate (bpm):</label>
-          <p class="input-container">
+          <p class="input-container" style="margin-bottom: -5px">
             <span>
               <span class="range-labels">
                 <input type="range" min="30" max="200" id="bpm_r" />
                 <label class="min">30</label>
                 <label class="max">200</label>
               </span>
-              <input type="number" min="30" max="200" id="bpm_n" />
+              <input type="number" min="30" max="200" id="bpm_n" />s
             </span>
           </p>
 
@@ -69,7 +63,7 @@
           </p>-->
 
           <!--  Heart rate period (s)  -->
-          <label>Period:</label>
+          <label>Period (s):</label>
           <p class="input-container">
             <span>
               <span class="range-labels">
@@ -111,9 +105,40 @@
       </div> <!--  End waveform left panel -->
 
       <!--                             -->
-      <!--    CALIBRATE LEFT PANEL     -->
+      <!--    EXPORT LEFT PANEL     -->
       <!--                             -->
-      <div id="calibrate-left" style="display: none">
+      <div id="export-left" style="display: none">
+        <div class="input-container">
+          <label>Format:</label>
+          <select>
+            <option>.png</option>
+            <option>.csv</option>
+          </select>
+        </div>
+        <br/>
+        <div class="input-container">
+          <label>Save to:</label>
+          <input type="file"/>
+        </div>
+        <br/>
+        <div>
+          <label>Graph type:</label> 
+          <select id="graph-picker">
+            <option value="pressure">Pressure</option>
+            <option value="bloodflow">Blood flow</option>
+            <option value="airflow">Air flow</option>
+            <option value="datatable">Data table</option>
+          </select>
+        </div>
+      </div> <!--  End calibrate left panel -->
+      
+      <!--                             -->
+      <!--     SETTINGS LEFT PANEL     -->
+      <!--                             -->
+      <div id="settings-left" style="display: none">
+        <p>
+          Show pulse? <button id="show-pulse">toggle</button>
+        </p>
         <p class="input-container">
           Open inflow valve 
           <span>
@@ -145,39 +170,57 @@
           <button id="toggle-3"> Toggle</button>
         </p>
         <hr/>
-        <p>
-          Measured pressure: <span id="m-pressure"></span>mmHg
-        </p>
-        <p>
-          Measured flowrate: <span id="m-flowrate"></span>mL/min
-        </p>
-      </div> <!--  End calibrate left panel -->
-      
-      <!--                             -->
-      <!--     SETTINGS LEFT PANEL     -->
-      <!--                             -->
-      <div id="settings-left" style="display: none">
-        <p>
-          Show pulse? <button id="show-pulse">toggle</button>
-        </p>
-        
       </div>
     
     </div> <!--  End of left panel  -->
 
     <!--  The right panel, with graphs mostly -->
     <div id="right-panel">
-      <!--                            -->
-      <!--  MANUAL TESTING INTERFACE  --> 
-      <!--                            -->
 
       <!--                             -->
       <!--  WAVEFORM TESTING INTERFACE -->
       <!--                             -->
       <!--  Waveform graph  -->
       <div id="graph-container">
-        <canvas id="pressure-graph"></canvas><br/><br/>
-        <canvas id="airflow-graph"></canvas>
+        <canvas id="pressure-graph"></canvas>
+        <canvas id="airflow-graph" style="display:none;"></canvas>
+        <br/><br/><br/>
+        <!--  Button to toggle pulse  -->
+        <div id="pulse-btns">
+          <button id="start-pulse"> &#9654;</button>
+          <button id="stop-pulse" style="display:none;"> &#9632;</button>
+          <div id="clock">0:00</div>
+        </div>
+        <!-- List of graphs to choose from -->
+        <div>
+          <label>Graph type:</label> 
+          <select id="graph-picker">
+            <option value="pressure">Pressure</option>
+            <option value="bloodflow">Blood flow</option>
+            <option value="airflow">Air flow</option>
+            <option value="datatable">Data table</option>
+          </select>
+        </div>
+        
+        <!-- Positioned absolutely in right corner -->
+        <div id="live-data"> 
+          <div>
+            <label>Ventricular pressure:</label>
+            <span id="m-pressure">- </span>mmHg
+          </div>
+          <div>
+            <label>Aortic pressure:</label>
+            <span id="m-pressure">- </span>mmHg
+          </div>
+          <div>
+            <label>Mitral pressure:</label>
+            <span id="m-pressure">- </span>mmHg
+          </div>
+          <div>
+            <label>Flowrate:</label>
+            <span id="m-flowrate">- </span>mL/min
+          </div>
+        </div>
       </div>
 
     </div> <!--  End right panel -->

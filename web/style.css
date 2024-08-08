@@ -1,9 +1,22 @@
+/* 
+ * Styling for the entire app. 
+ * 
+ * Sections of this file:
+ *  - Global
+ *    - UI Slider
+ *  - Top navbar
+ *  - Left panel
+ *  - Right panel
+ *    - Waveform manager
+ * 
+ */
+
 
 /*************************/
 /***   Global styles   ***/
 /*************************/
 
-/*  Styling for the entire body */
+/*  Styling for the entire <body> */
 body {
   top: 0px;
   right: 0px;
@@ -19,50 +32,17 @@ body {
   display: none;
 }
 
-/*  Contains the whole website  */
+/*  Contains the left and right panels (and thus the whole app)  */
 #panel-container {
   display: flex;
 }
 
-/*  Left panel  */
-#left-panel {
-  height:     100vh;
-  width:      35vw;
-  padding:    10px;
-  box-sizing: border-box;
-  background: #334;
-  box-shadow: 0px 0px 10px black;
-  overflow-y: scroll;
-  z-index:    10;
-}
-
-/*  Right panel  */
-#right-panel {
-  height: 100vh;
-  width: 65vw;
-  padding: 10px;
-  box-sizing: border-box;
-  background: #223;
-  overflow-y: scroll;
-}
-
-/*  An input container is a text label next to an input slider or textbox  */
-.input-container {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-}
-/*  The <label> tag  */
+/*  The <label> tag appears faded and smaller. */
 label {
   font-size: 0.7em;
   opacity: 0.7;
 }
-/*  Number inputs */
-.input-container input[type="number"] {
-  margin-left: 10px;
-  width: 50px;
-  box-shadow: 0px 0px 3px black inset;
-}
+
 /*  All text and button inputs */
 button, input {
   background: #667;
@@ -105,7 +85,38 @@ input[type="range"] {
   right: 10px;
 }
 
-/***  TOP NAV BAR STYLING                 */
+/*  Dropdown selector  */
+select {
+  color: white;
+  background: #223;
+}
+
+/****************************/
+/***       UI-slider      ***/
+/****************************/
+
+/*  For the pressure slider, through jquery-ui  */
+.ui-slider {
+  width: 129px;
+  height:5px;  
+}
+.ui-slider-range {
+  background: #55f;
+  border: solid 2px #55f !important;
+  top: -1px !important;
+}
+.ui-slider-handle {
+  height: 1em !important;
+  width: 1em !important;
+  border-radius: 50%;
+  background: #55f !important;
+  border: 1px solid #55f !important;
+  top: -6px !important;
+}
+
+/****************************/
+/***      Top nav bar     ***/
+/****************************/
 
 /*  Add a black background color to the top navigation */
 .topnav {
@@ -162,28 +173,44 @@ input[type="range"] {
   fill: rgba(255,255,255,0.5);
 }
 
-
-/***  UI-SLIDER STYLING             */
-
-/*  For the pressure slider, through jquery-ui  */
-.ui-slider {
-  width: 129px;
-  height:5px;  
-}
-.ui-slider-range {
-  background: #55f;
-  border: solid 2px #55f !important;
-  top: -1px !important;
-}
-.ui-slider-handle {
-  height: 1em !important;
-  width: 1em !important;
-  border-radius: 50%;
-  background: #55f !important;
-  border: 1px solid #55f !important;
-  top: -6px !important;
+/****************************/
+/***      Left panel      ***/
+/****************************/
+#left-panel {
+  height:     100vh;
+  width:      35vw;
+  padding:    10px;
+  box-sizing: border-box;
+  background: #334;
+  box-shadow: 0px 0px 10px black;
+  overflow-y: scroll;
+  z-index:    10;
 }
 
+/*  A text label next to an input slider or textbox  */
+.input-container {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+}
+/*  Number inputs */
+.input-container input[type="number"] {
+  margin-left: 10px;
+  width: 50px;
+  box-shadow: 0px 0px 3px black inset;
+}
+
+/****************************/
+/***      Right panel     ***/
+/****************************/
+#right-panel {
+  height: 100vh;
+  width: 65vw;
+  padding: 10px;
+  box-sizing: border-box;
+  background: #223;
+  overflow-y: scroll;
+}
 
 /***********************************/
 /***   Waveform manager styles   ***/
@@ -196,8 +223,6 @@ input[type="range"] {
 /* Style the chart canvas */
 #graph-container {
   display: block;
-  /*width: 600px;
-  height: 700px;*/
   padding: 10px;
   border-radius: 5px;
 
@@ -205,18 +230,40 @@ input[type="range"] {
   margin: 0px auto;
 }
 
+#live-data {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  text-align: right;
+  font-size: .75em;
+  background: #334;
+  box-shadow: 0px 0px 10px black;
+  padding: 5px;
+}
+
 #pulse-btns {
   display: flex;
   margin-bottom: 10px;
+  background: #112;
+  width: 150px;
+  box-shadow: 0px 0px 3px black inset;
+}
+#start-pulse, #stop-pulse {
+  overflow: hidden;
+  background: #335;
+  width: 40px;
+}
+#start-pulse, #stop-pulse, #pulse-btns {
+  border-radius: 40px;
 }
 #clock {
   display: inline-block;
-  padding: 5px;
+  padding: 10px;
   box-sizing: border-box;
-  background: #222;
-  box-shadow: 0px 0px 3px black inset;
+  overflow: hidden;
   font-family: monospace;
   width: 80px;
+  text-align: right;
 }
 
 

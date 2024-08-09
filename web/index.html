@@ -217,45 +217,53 @@
         </div>
         
         <br/><br/><br/>
-        <div id="left-box-controls">
-          <!--  Button to toggle pulse  -->
-          <div id="pulse-btns">
-            <button id="start-pulse"> &#9654;</button>
-            <button id="stop-pulse" style="display:none;"> &#9632;</button>
-            <div id="clock">0:00</div>
+        <!--  Positioned absolutely in right corner -->
+        <div id="box-controls">
+          
+          <div id="pulse-btn-and-graph-picker">
+            <!--  Button to toggle pulse  -->
+            <div id="pulse-btns">
+              <button id="start-pulse"> &#9654;</button>
+              <button id="stop-pulse" style="display:none;"> &#9632;</button>
+              <div id="clock">0:00</div>
+            </div>
+            <!-- List of graphs to choose from -->
+            <div>
+              <label>Graph type:</label> 
+              <select id="graph-picker">
+                <option value="pressure">Pressure</option>
+                <option value="bloodflow">Blood flow</option>
+                <option value="airflow">Air flow</option>
+                <option value="datatable">Data table</option>
+              </select>
+            </div>
           </div>
-          <!-- List of graphs to choose from -->
-          <div>
-            <label>Graph type:</label> 
-            <select id="graph-picker">
-              <option value="pressure">Pressure</option>
-              <option value="bloodflow">Blood flow</option>
-              <option value="airflow">Air flow</option>
-              <option value="datatable">Data table</option>
-            </select>
-          </div>
-        </div>
         
-        <!-- Positioned absolutely in right corner -->
-        <div id="live-data"> 
-          <div>
-            <label>Ventricular pressure:</label>
-            <span id="m-pressure">- </span><span>mmHg</span>
+          <div id="vertical-divider"></div>
+        
+          <!-- Positioned absolutely in right corner -->
+          <div id="live-data"> 
+            <div>
+              <label>Ventricular pressure:</label>
+              <span id="m-pressure">- </span><span>mmHg</span>
+            </div>
+            <div>
+              <label>Aortic pressure:</label>
+              <span id="m-pressure">- </span><span>mmHg</span>
+            </div>
+            <div>
+              <label>Mitral pressure:</label>
+              <span id="m-pressure">- </span><span>mmHg</span>
+            </div>
+            <div>
+              <label>Flowrate:</label>
+              <span id="m-flowrate">- </span><span>mL/min</span>
+            </div>
           </div>
-          <div>
-            <label>Aortic pressure:</label>
-            <span id="m-pressure">- </span><span>mmHg</span>
-          </div>
-          <div>
-            <label>Mitral pressure:</label>
-            <span id="m-pressure">- </span><span>mmHg</span>
-          </div>
-          <div>
-            <label>Flowrate:</label>
-            <span id="m-flowrate">- </span><span>mL/min</span>
-          </div>
-        </div>
-      </div>
+          
+        </div> <!--  End of box controls container -->
+          
+      </div> <!--  End of graph container -->
 
     </div> <!--  End right panel -->
 

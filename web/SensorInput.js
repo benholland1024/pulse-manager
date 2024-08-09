@@ -26,11 +26,12 @@ let SensorInput = {
 
   //  Methods
   // init:             SensorInput_init,
-  new_run:     SensorInput_new_run
+  get_table_rows:   SensorInput_get_table_rows,
+  new_run:          SensorInput_new_run
 }
 
 //  Returns HTML elements for the data table, given a run array
-function run_to_table_rows(run) {
+function SensorInput_get_table_rows(run) {
   let html = `<tr>
               <th>Time (s)</th>
               <th>VP</th>
@@ -65,7 +66,7 @@ function update_pressure(pressure) {
     bloodflow: 0,
     airflow:   0
   });
-  $('#data-table table').html(run_to_table_rows(SensorInput.current_run));
+  $('#data-table table').html(SensorInput.get_table_rows(SensorInput.current_run));
 }
 
 //  Called from Python!  Updates the pressure display + flow_rate

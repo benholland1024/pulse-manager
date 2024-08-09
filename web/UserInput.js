@@ -13,6 +13,7 @@
  *      - PressureControls
  *      - PulseButton
  *      - GraphPicker
+ *      - LoadARun        (export)
  *      - ManualControls  (settings)
  *      - ShowPulseButton (settings)
  *      - 
@@ -55,6 +56,7 @@ function UserInput_init() {
   PressureControls.init();
   PulseButtons.init();
   GraphPicker.init();
+  LoadARun.init();
   ManualControls.init();
   ShowPulseButton.init();
 }
@@ -240,6 +242,24 @@ let GraphPicker = {
       } else {
         $('#data-table').css('display', 'none');
       }
+    });
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing manual open/close controls
+//////////////////////////////////////////////////////////////////////
+let LoadARun = {
+  init: function() {
+    $('#run-selector').on("change", function() {
+      if (this.value == '-') {
+        return;
+      }
+      let data = SensorInput.run_history[this.value - 1];
+      if (this.value == SensorInput.run_history.length + 1) {
+        data = SensorInput.current_run;
+      }
+      $('#data-table table').html(SensorInput.get_table_rows(data));
     });
   }
 }

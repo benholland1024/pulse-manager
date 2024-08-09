@@ -89,18 +89,18 @@ input[type="range"] {
 select {
   color: white;
   background: #223;
+  cursor: pointer;
 }
 
 /* Tables, like the data table */
 #data-table {
   max-height: 230px;
   overflow: scroll;
-  text-align: center;
   flex-direction: row;
   justify-content: center;
 }
 #data-table table {
-  box-shadow: 0px 0px 5px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.5) inset;
   border-spacing: 0px;
   font-size: 0.75em;
   position: relative;
@@ -263,32 +263,34 @@ tr:nth-child(odd) {
 }
 
 /* The box floating in the bottom left corner */
-#left-box-controls {
+#box-controls {
   position: absolute;
+  display: flex;
   bottom: 5px;
-  left: calc(35vw + 5px);
+  right: 5px;
   /*font-size: .75em;*/
   background: #334;
   box-shadow: 0px 0px 10px black;
   padding: 5px;
 }
 
-/* The box floating in the right corner */
+/*  The line between the play button/timer and the live data */
+#vertical-divider {
+  border-left: 1px solid #fff;
+  height: 80px;
+  margin: 0px 5px;
+  opacity: 0.5; 
+}
+
+/*  The measured data in the right corner. */
 #live-data {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
   text-align: right;
-  /*font-size: .75em;*/
-  background: #334;
-  box-shadow: 0px 0px 10px black;
-  padding: 5px;
 }
 #live-data span {
   font-size: 0.85em;
 }
 
-/* The play button and timer */
+/*  The play button and timer */
 #pulse-btns {
   display: flex;
   margin-bottom: 10px;

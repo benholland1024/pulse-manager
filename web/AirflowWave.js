@@ -13,13 +13,13 @@ import UserInput from './UserInput.js';
 let AirflowWave = {
   //  Properties:
   inflow:       [],         //  List of airflow values, which can be negative
-                          //    (y value list, the same size as UserInput.xValues)
+                            //    (y value list, the same size as UserInput.xValues)
   inflow_faded: [],
   chart:        undefined,  //  Stores a ChartJS object
 
   //  CONSTANTS:  See UserInput
-  step_size: 0.025,     //  The interval between graph points
-  label_step: 0.5,      //  Which x labels should be shown? (Must be a multiple of step_size)
+  step_size:    0.025,      //  The interval between graph points
+  label_step:   0.5,        //  Which x labels should be shown? (Must be a multiple of step_size)
 
   //  Methods:
   get_inflow_all:    AirflowWave_get_inflow_all,

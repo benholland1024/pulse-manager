@@ -59,11 +59,11 @@ function App_change_mode(new_mode) {
   $(`#${this.mode}-btn`).addClass('active');
   $(`#${this.mode}-left`).css('display', 'block');
   if (this.mode == 'waveform') {
-
     PressureWave.init();
     AirflowWave.init();
   	pubsub.publish( 'bpm', $('#bpm_r').val() ); //  This draws the waves
   }
+  
 }
 
 

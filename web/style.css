@@ -285,7 +285,7 @@ tr:nth-child(odd) {
   padding: 5px;
 }
 #live-data span {
-  font-size: 0.75em;
+  font-size: 0.85em;
 }
 
 /* The play button and timer */

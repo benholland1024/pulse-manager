@@ -22,6 +22,8 @@
 import PubSub from './PubSub.js';
 import PressureWave from './PressureWave.js';
 import AirflowWave from './AirflowWave.js';
+import SensorInput from './SensorInput.js';
+
 
 let UserInput = {
 
@@ -184,6 +186,7 @@ function PulseButtons_start_pulse() {
     PressureWave.start_pulse();
     AirflowWave.start_pulse();
   }
+  SensorInput.new_run();
   eel.start_pulse(UserInput.bpm);
 }
 function PulseButtons_stop_pulse() {
@@ -193,8 +196,8 @@ function PulseButtons_stop_pulse() {
     PressureWave.stop_pulse();
     AirflowWave.stop_pulse();
   }
+  $('#run-selector').val(SensorInput.run_history.length + 1);
   eel.stop_pulse();
-  
 }
 function PulseButtons_pulse_step() {
   UserInput.clock += UserInput.step_size;

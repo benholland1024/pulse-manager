@@ -39,14 +39,12 @@
           <!--  Heart rate (bpm) input -->
           <label>Heart rate (bpm):</label>
           <p class="input-container" style="margin-bottom: -5px">
-            <span>
-              <span class="range-labels">
-                <input type="range" min="30" max="200" id="bpm_r" />
-                <label class="min">30</label>
-                <label class="max">200</label>
-              </span>
-              <input type="number" min="30" max="200" id="bpm_n" />
+            <span class="range-labels">
+              <input type="range" min="30" max="200" id="bpm_r" />
+              <label class="min">30</label>
+              <label class="max">200</label>
             </span>
+            <input type="number" min="30" max="200" id="bpm_n" />
           </p>
 
           <!--  Heart rate (Hz)  -->
@@ -65,14 +63,12 @@
           <!--  Heart rate period (s)  -->
           <label>Period (s):</label>
           <p class="input-container">
-            <span>
-              <span class="range-labels">
-                <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
-                <label class="min">0.3</label>
-                <label class="max">2</label>
-              </span>
-              <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
+            <span class="range-labels">
+              <input type="range" min="0.3" max="2" step="0.01" id="period_r" />
+              <label class="min">0.3</label>
+              <label class="max">2</label>
             </span>
+            <input type="number" min="0.3" max="2" step="0.01" id="period_n" />
           </p>
 
         </div> <!--  End rate and period container -->
@@ -108,6 +104,21 @@
       <!--    EXPORT LEFT PANEL     -->
       <!--                             -->
       <div id="export-left" style="display: none">
+        <p class="input-container">
+          <label>Load a run:</label>
+          <select id="run-selector">
+            <option value="-">-</option>
+          </select>
+        </p>
+        <p class="input-container">
+          <label>Heart rate:</label>
+          <span style="font-size: 0.8em;">100bpm</span>
+        </p>
+        <p class="input-container">
+          <label>Blood pressure:</label>
+          <span style="font-size: 0.8em;">120/60</span>
+        </p>
+        <br/><hr/><br/>
         <div class="input-container">
           <label>Format:</label>
           <select>
@@ -121,7 +132,7 @@
           <input type="file"/>
         </div>
         <br/>
-        <div>
+        <div class="input-container">
           <label>Graph type:</label> 
           <select id="export-graph-picker">
             <option value="pressure">Pressure</option>

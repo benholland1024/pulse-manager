@@ -9,8 +9,8 @@ import UserInput from './UserInput.js';
 
 let SensorInput = {
 
-  //  VARIABLES BEING MEASURED
-  history: [
+  //  VARIABLES
+  current_run: [
     /*{
       time: 0,
       vp:   0,
@@ -19,17 +19,18 @@ let SensorInput = {
       bloodflow: 0,
       airflow:   0
     }*/
-  ]
+  ],
+  run_history: [], //  An array of arrays, each being a "current_run"
 
   //  CONSTANTS:
 
   //  Methods
   // init:             SensorInput_init,
-  // update_pressure:  SensorInput_update_pressure
+  new_run:     SensorInput_new_run
 }
 
-//  Returns HTML elements for the data table, given a history object
-function history_to_table_rows(history) {
+//  Returns HTML elements for the data table, given a run array
+function run_to_table_rows(run) {
   let html = `<tr>
               <th>Time (s)</th>
               <th>VP</th>
@@ -38,8 +39,8 @@ function history_to_table_rows(history) {
               <th>Blood flow</th>
               <th>Airflow flow</th>
             </tr>`;
-  for (let i = 0; i < history.length; i++) {
-    let row = history[i];
+  for (let i = 0; i < run.length; i++) {
+    let row = run[i];
     html += `<tr>
               <td>${row.time}</td>
               <td>${row.vp}</td>
@@ -52,11 +53,11 @@ function history_to_table_rows(history) {
   return html;
 }
 
+//  Called from Python!  Updates the pressure display + current_run
 eel.expose(update_pressure);
 function update_pressure(pressure) {
   $('#m-pressure').text(pressure);
-  console.log(`New pressure: ${pressure}`)
-  SensorInput.history.push({
+  SensorInput.current_run.push({
     time: Math.round(UserInput.clock*100) / 100,
     vp:   pressure,
     ap:   0,
@@ -64,14 +65,24 @@ function update_pressure(pressure) {
     bloodflow: 0,
     airflow:   0
   });
-  console.log(SensorInput.history);
-  $('#data-table table').html(history_to_table_rows(SensorInput.history));
+  $('#data-table table').html(run_to_table_rows(SensorInput.current_run));
 }
 
+//  Called from Python!  Updates the pressure display + flow_rate
 eel.expose(update_flowrate);
 function update_flowrate(flowrate) {
   $('#m-flowrate').text(flowrate);
   console.log(`New flowrate: ${flowrate}`)
+}
+
+function SensorInput_new_run() {
+  if (this.current_run.length != 0) {
+    //  This is a hacky way to copy an object, instead of referencing it
+    this.run_history.push(JSON.parse(JSON.stringify(this.current_run)));
+    this.current_run = [];
+  }
+  let run_num = this.run_history.length + 1;
+  $('#run-selector').append(`<option value="${run_num}">Run ${run_num}</option>`);
 }
 
 export default SensorInput;

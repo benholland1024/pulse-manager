@@ -54,7 +54,7 @@ def check_pressure():
 def detect_flow_pulse(channel):
   global pulse_count
   pulse_count += 1;
-  print('Flow pulse ' + str(pulse_count) + ' detected!')
+  #print('Flow pulse ' + str(pulse_count) + ' detected!')
   
 def check_flow_rate():
   global pulse_count
@@ -62,7 +62,7 @@ def check_flow_rate():
   while do_pulse:
     liters_per_min = pulse_count / 7.5;
     eel.update_flowrate(liters_per_min)
-    print(str(liters_per_min) + " L/min")
+    #print(str(liters_per_min) + " L/min")
     pulse_count = 0;
     eel.sleep(1)
       

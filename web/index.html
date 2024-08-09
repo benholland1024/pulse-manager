@@ -45,7 +45,7 @@
                 <label class="min">30</label>
                 <label class="max">200</label>
               </span>
-              <input type="number" min="30" max="200" id="bpm_n" />s
+              <input type="number" min="30" max="200" id="bpm_n" />
             </span>
           </p>
 
@@ -123,7 +123,7 @@
         <br/>
         <div>
           <label>Graph type:</label> 
-          <select id="graph-picker">
+          <select id="export-graph-picker">
             <option value="pressure">Pressure</option>
             <option value="bloodflow">Blood flow</option>
             <option value="airflow">Air flow</option>
@@ -184,41 +184,64 @@
       <div id="graph-container">
         <canvas id="pressure-graph"></canvas>
         <canvas id="airflow-graph" style="display:none;"></canvas>
-        <br/><br/><br/>
-        <!--  Button to toggle pulse  -->
-        <div id="pulse-btns">
-          <button id="start-pulse"> &#9654;</button>
-          <button id="stop-pulse" style="display:none;"> &#9632;</button>
-          <div id="clock">0:00</div>
+        <div id="data-table" style="display:none;">
+          <table>
+            <tr>
+              <th>Time (s)</th>
+              <th>VP</th>
+              <th>AP</th>
+              <th>MP</th>
+              <th>Blood flow</th>
+              <th>Airflow flow</th>
+            </tr>
+            <tr>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          </table>
         </div>
-        <!-- List of graphs to choose from -->
-        <div>
-          <label>Graph type:</label> 
-          <select id="graph-picker">
-            <option value="pressure">Pressure</option>
-            <option value="bloodflow">Blood flow</option>
-            <option value="airflow">Air flow</option>
-            <option value="datatable">Data table</option>
-          </select>
+        
+        <br/><br/><br/>
+        <div id="left-box-controls">
+          <!--  Button to toggle pulse  -->
+          <div id="pulse-btns">
+            <button id="start-pulse"> &#9654;</button>
+            <button id="stop-pulse" style="display:none;"> &#9632;</button>
+            <div id="clock">0:00</div>
+          </div>
+          <!-- List of graphs to choose from -->
+          <div>
+            <label>Graph type:</label> 
+            <select id="graph-picker">
+              <option value="pressure">Pressure</option>
+              <option value="bloodflow">Blood flow</option>
+              <option value="airflow">Air flow</option>
+              <option value="datatable">Data table</option>
+            </select>
+          </div>
         </div>
         
         <!-- Positioned absolutely in right corner -->
         <div id="live-data"> 
           <div>
             <label>Ventricular pressure:</label>
-            <span id="m-pressure">- </span>mmHg
+            <span id="m-pressure">- </span><span>mmHg</span>
           </div>
           <div>
             <label>Aortic pressure:</label>
-            <span id="m-pressure">- </span>mmHg
+            <span id="m-pressure">- </span><span>mmHg</span>
           </div>
           <div>
             <label>Mitral pressure:</label>
-            <span id="m-pressure">- </span>mmHg
+            <span id="m-pressure">- </span><span>mmHg</span>
           </div>
           <div>
             <label>Flowrate:</label>
-            <span id="m-flowrate">- </span>mL/min
+            <span id="m-flowrate">- </span><span>mL/min</span>
           </div>
         </div>
       </div>

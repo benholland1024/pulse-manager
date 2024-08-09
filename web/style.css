@@ -91,6 +91,38 @@ select {
   background: #223;
 }
 
+/* Tables, like the data table */
+#data-table {
+  max-height: 230px;
+  overflow: scroll;
+  text-align: center;
+  flex-direction: row;
+  justify-content: center;
+}
+#data-table table {
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.5);
+  border-spacing: 0px;
+  font-size: 0.75em;
+  position: relative;
+}
+th {
+  position: sticky;
+  top: 0px;
+}
+td, th {
+  padding: 5px 10px;
+  text-align: center;
+}
+tr th {
+  background: #667;
+}
+tr {
+  background: #445;
+}
+tr:nth-child(odd) {
+  background: #556;
+}
+
 /****************************/
 /***       UI-slider      ***/
 /****************************/
@@ -230,17 +262,33 @@ select {
   margin: 0px auto;
 }
 
-#live-data {
+/* The box floating in the bottom left corner */
+#left-box-controls {
   position: absolute;
   bottom: 5px;
-  right: 5px;
-  text-align: right;
-  font-size: .75em;
+  left: calc(35vw + 5px);
+  /*font-size: .75em;*/
   background: #334;
   box-shadow: 0px 0px 10px black;
   padding: 5px;
 }
 
+/* The box floating in the right corner */
+#live-data {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  text-align: right;
+  /*font-size: .75em;*/
+  background: #334;
+  box-shadow: 0px 0px 10px black;
+  padding: 5px;
+}
+#live-data span {
+  font-size: 0.75em;
+}
+
+/* The play button and timer */
 #pulse-btns {
   display: flex;
   margin-bottom: 10px;
@@ -265,6 +313,8 @@ select {
   width: 80px;
   text-align: right;
 }
+
+
 
 
 

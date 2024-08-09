@@ -94,7 +94,7 @@ function prompt_alerts(description) {
     without pulsing. The heart is at diastole.
 
   The range of x values scales with the bpm, to show
-    two waves. For 100bpm (1.67Hz), T = 1/1.67 = .60s,
+    two periods. For 100bpm (1.67Hz), T = 1/1.67 = .60s,
     thus the x values are 0 to (2*0.60), or 0 to 1.2s.
 
   The range of y values scales between diastole and

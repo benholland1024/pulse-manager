@@ -222,6 +222,7 @@ function reset_clock() {
 let GraphPicker = {
   init: function() {
     $('#graph-picker').on('change', function() {
+      console.log("called");
       let new_graph = $('#graph-picker').val();
       let graph_options = ['pressure', 'airflow', 'bloodflow'];
       for (let i = 0; i < graph_options.length; i++) {
@@ -230,6 +231,11 @@ let GraphPicker = {
         } else {
           $('#' + graph_options[i] + '-graph').css('display', 'block');
         }
+      }
+      if (new_graph == 'datatable') {
+        $('#data-table').css('display', 'flex');
+      } else {
+        $('#data-table').css('display', 'none');
       }
     });
   }

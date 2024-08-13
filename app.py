@@ -1,14 +1,13 @@
 #!/usr/bin/python
 #
-#  This file starts the user interface!
-#  It also lets the UI control the circuit:
+#  This file starts the user interface and controls the circuitry.
 #
-#    Ground ◄───────────────────────────────────────┐
-#                                                   │
-#    Pin 32 ─────► open inflow valve ───────────────┤
-#                                                   │
-#    Pin 33 ─────► open outflow valve near pocket ──┘
-
+#  It contains the following sections:
+#    - Global variables
+#    - Data measurement
+#    - Valve controls
+#    - Data export
+#    - Boot function
 
 import eel                  # Connects js with py
 import RPi.GPIO as GPIO     # Activates pins!
@@ -18,9 +17,9 @@ import mcp3008              # Reads data sensors using SPI
 
 eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
-  ##################################
+    ##############################
   ####     GLOBAL VARIABLES     ####
-  ##################################
+    ##############################
 
 pins = {  #  The three pins used, and whether they're open
   "31": False,      # Outflow near a
@@ -30,6 +29,12 @@ pins = {  #  The three pins used, and whether they're open
 
 pulse_count = 0;    # Used to detect flow rate
 
+save_folder = '-';   # Location to save exported data
+
+    ##############################
+  ####     DATA MEASUREMENT     ####
+    ##############################
+  
 # Constantly check the pressure sensors. Called in boot()
 def check_pressure():
   global do_pulse
@@ -55,7 +60,8 @@ def detect_flow_pulse(channel):
   global pulse_count
   pulse_count += 1;
   #print('Flow pulse ' + str(pulse_count) + ' detected!')
-  
+
+# Runs every 1 second.
 def check_flow_rate():
   global pulse_count
   global do_pulse
@@ -65,19 +71,11 @@ def check_flow_rate():
     #print(str(liters_per_min) + " L/min")
     pulse_count = 0;
     eel.sleep(1)
-      
-#  This fires when the program first runs.
-def boot():
-  GPIO.setwarnings(False)
-  GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
-  GPIO.setup(33, GPIO.OUT)
-  GPIO.setup(32, GPIO.OUT)
-  GPIO.setup(31, GPIO.OUT)
-  
-  GPIO.setup(36, GPIO.IN)
-  GPIO.add_event_detect(36, GPIO.RISING, callback=detect_flow_pulse)
-  
-boot()
+    
+
+    ##############################
+  ####      VALVE CONTROLS      ####
+    ##############################
 
 # Used in other functions to turn pins on/off by pin #, & record status
 def set_pin(pin_num, turn_on):
@@ -103,21 +101,21 @@ def start_pulse(bpm):
   eel.spawn(check_flow_rate)
   
   def pulse(bpm):
-    hz = round(int(bpm) / 60, 2);
-    period = round(1 / hz, 2);
+    hz = round(int(bpm) / 60, 2)
+    period = round(1 / hz, 2)
     print(period)
     timer = 0
-    period_count = 0;
+    period_count = 0
     inflow = True
     while do_pulse:
-      set_pin(33, inflow);
-      set_pin(32, not inflow);
-      set_pin(31, not inflow);
+      set_pin(33, inflow)
+      set_pin(32, not inflow)
+      set_pin(31, not inflow)
       eel.pulse_step(timer)     # Calls a JS function in UserInput.js
       timer += 0.025
       period_count += 0.025
       if (period_count >= round(period/2,2)):
-        period_count -= round(period/2,2);
+        period_count -= round(period/2,2)
         inflow = not inflow;
       eel.sleep(0.025)
       
@@ -133,7 +131,54 @@ def stop_pulse():
   set_pin(31, True);
   eel.reset_clock()  # Calls a JS function in UserInput.js
   
+    ##############################
+  ####        DATA EXPORT       ####
+    ##############################
+    
+#  Find available USB devices
+@eel.expose
+def find_usb_drives():
+  username = os.getlogin()
+  usb_directories = os.listdir('/media/' + username)
+  for i, directory in enumerate(usb_directories):
+    usb_directories[i] = '/media/' + username + '/' + directory
+  usb_directories.insert(0, '/home/' + username + '/Documents')
+  return usb_directories
+find_usb_drives()
 
+#  Sets the folder where data should be exported
+@eel.expose
+def set_save_folder(new_location):
+  global save_folder
+  save_folder = new_location
+  
+#  Saves data to the data location
+@eel.expose
+def export(data, datatype):
+  global save_folder
+  if (save_folder == '-'):
+    return;
+  
+  ext = '.csv' # if datatype == 'csv' else '.png'
+
+  files = os.listdir(save_folder)
+  new_file_name = 'data';
+  unique_name = False;
+  i = 0;
+  while (not unique_name):
+    i += 1;
+    unique_name = True;
+    for _file in files:
+      if (_file == 'data' + str(i) + ext):
+        unique_name = False;
+  file = open(save_folder + '/data' + str(i) + ext, 'w')
+  file.write(data)
+  file.close()
+  return 'data' + str(i) + ext
+  
+    ##############################
+  ####      BOOT FUNCTION       ####
+    ##############################
 
 #  Fires when the app closes
 def on_close(url, open_websockets):
@@ -141,5 +186,20 @@ def on_close(url, open_websockets):
   if not open_websockets:
     GPIO.cleanup()
     exit()
+    
+#  This fires when the program first runs.
+def boot():
+  GPIO.setwarnings(False)
+  GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
+  GPIO.setup(33, GPIO.OUT)
+  GPIO.setup(32, GPIO.OUT)
+  GPIO.setup(31, GPIO.OUT)
+  
+  GPIO.setup(36, GPIO.IN)
+  GPIO.add_event_detect(36, GPIO.RISING, callback=detect_flow_pulse)
+  
+  eel.start('index.html', close_callback=on_close, size=(800,400))
+  
+boot()
 
-eel.start('index.html', close_callback=on_close, size=(800,400))
+

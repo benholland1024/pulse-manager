@@ -110,6 +110,7 @@
             <option value="-">-</option>
           </select>
         </p>
+        <!-- 
         <p class="input-container">
           <label>Heart rate:</label>
           <span style="font-size: 0.8em;">100bpm</span>
@@ -117,31 +118,33 @@
         <p class="input-container">
           <label>Blood pressure:</label>
           <span style="font-size: 0.8em;">120/60</span>
-        </p>
+        </p>-->
         <br/><hr/><br/>
-        <div class="input-container">
-          <label>Format:</label>
-          <select>
-            <option>.png</option>
-            <option>.csv</option>
-          </select>
-        </div>
         <br/>
         <div class="input-container">
           <label>Save to:</label>
-          <input type="file"/>
+          <span style="display: flex; align-items: center;">
+            <select id="export-locations">
+              <option>-</option>
+              <option>/home/benholland/Documents</option>
+            </select>
+            <img src="./assets/refresh-i.svg" id="refresh-export-locations" 
+              title="Show new USB drives."/>
+          </span>
         </div>
         <br/>
-        <div class="input-container">
-          <label>Graph type:</label> 
-          <select id="export-graph-picker">
-            <option value="pressure">Pressure</option>
-            <option value="bloodflow">Blood flow</option>
-            <option value="airflow">Air flow</option>
-            <option value="datatable">Data table</option>
+        <!-- Hiding this for now. TODO: Implement screenshots -->
+        <div class="input-container" style="display: none;"> 
+          <label>Data type:</label> 
+          <select id="export-type-picker">
+            <option value="csv">Data (.csv)</option>
+            <option value="png">Screenshot (.png)</option>
           </select>
         </div>
-      </div> <!--  End calibrate left panel -->
+        <br/>
+        <button id="export">Export data</button>
+        <p id="export-msg"></p>
+      </div> <!--  End export left panel -->
       
       <!--                             -->
       <!--     SETTINGS LEFT PANEL     -->

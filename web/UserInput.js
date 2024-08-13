@@ -14,6 +14,8 @@
  *      - PulseButton
  *      - GraphPicker
  *      - LoadARun        (export)
+ *      - SelectFolder    (export)
+ *      - Export          (export)
  *      - ManualControls  (settings)
  *      - ShowPulseButton (settings)
  *      - 
@@ -32,6 +34,8 @@ let UserInput = {
   bpm:           100,        //  Beats per minute
   diastole:      80,         //  Pressure at diastole in mmHg
   systole:       120,        //  Pressure at systole
+  file_type:     'csv',      //  Export csv or png
+  save_to:       '/home/benholland/Documents',         //  Filepath to save exported data
   show_pulse:    false,      //  Animate the pulse -- switch in Settings
 
   //  INDIRECTLY CONTROLLABLE:
@@ -59,6 +63,8 @@ function UserInput_init() {
   LoadARun.init();
   ManualControls.init();
   ShowPulseButton.init();
+  SelectFolder.init();
+  Export.init();
 }
 
 //  Returns a list of xValues, based on bpm
@@ -262,6 +268,78 @@ let LoadARun = {
       $('#data-table table').html(SensorInput.get_table_rows(data));
     });
   }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing "select folder" dropdown menu
+//////////////////////////////////////////////////////////////////////
+let SelectFolder = {
+  init: function() {
+    
+    $('#export-locations').on("change", function() {
+      let new_location = $('#export-locations').val();
+      eel.set_save_folder(new_location);
+    });
+    
+    $('#refresh-export-locations').on("click", function() {
+      SelectFolder.find_usb_drives();
+    });
+    SelectFolder.find_usb_drives();
+    
+  },
+  
+  find_usb_drives: SelectFolder_find_usb_drives
+}
+function SelectFolder_find_usb_drives() {
+  let promise = eel.find_usb_drives();
+  promise().then(function(usb_drives) {
+    $('#export-locations').html('<option value="-">-</option>');
+    for (let i = 0; i < usb_drives.length; i++) {
+      $('#export-locations').append(`<option value="${usb_drives[i]}">
+        ${usb_drives[i]}</option>`);
+    }
+  });
+}
+
+
+//////////////////////////////////////////////////////////////////////
+//  Object representing "Export" button
+//////////////////////////////////////////////////////////////////////
+
+let Export = {
+  init: function() {
+    $('#export').on("click", function() {
+      let location = $('#export-locations').val();
+      if (location == '-') {
+        $('#export-msg').text('No export location given');
+        return;
+      }
+      
+      let datatype = $('#export-data-type').val();
+      
+      let promise = eel.export(Export.get_CSV_data(), datatype);
+      promise().then(function (file_name) {
+        $('#export-msg').text('Saved to ' + location + '/' + file_name);
+      });
+    });
+  },
+  get_CSV_data:  Export_get_CSV_data
+}
+//  Creates a string formatted for a .csv file, like what Excel uses
+function Export_get_CSV_data() {
+  let json = SensorInput.current_run;
+  let str = '';
+  
+  for (let i = 0; i < json.length; i++) {
+    let line = '';
+    for (let index in json[i]) {
+      if (line != '') line += ','
+      line += json[i][index];
+    }
+    str += line + '\n';
+  }
+  
+  return str
 }
 
 

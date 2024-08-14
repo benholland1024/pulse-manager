@@ -304,6 +304,7 @@ tr:nth-child(odd) {
 /*  The measured data in the right corner. */
 #live-data {
   text-align: right;
+  width: 200px;
 }
 #live-data span {
   font-size: 0.85em;

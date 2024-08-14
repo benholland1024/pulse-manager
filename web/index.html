@@ -150,11 +150,13 @@
       <!--     SETTINGS LEFT PANEL     -->
       <!--                             -->
       <div id="settings-left" style="display: none">
-        <p>
-          Show pulse? <button id="show-pulse">toggle</button>
-        </p>
         <p class="input-container">
-          Open inflow valve 
+          <label>Show pulse?</label><input type="checkbox" id="show-pulse" />
+        </p>
+        <hr/>
+        <!--  I'm not opening the valves variably, so this can be ignored 
+        <p class="input-container">
+          <label>Open inflow valve</label>
           <span>
             <input type="range" min="0" max="100" id="inflow_r" 
               oninput="pubsub.publish('inflow', this.value)" />
@@ -170,17 +172,18 @@
             <input type="number" min="0" max="100" id="outflow_n"
               oninput="pubsub.publish('outflow', this.value)" />
           </span>
-        </p>
-        <p>
-          Pin 33 is: <span id="status-1">off</span>
+        </p>-->
+        <p>Manual valve controls: be careful!</p>
+        <p class="input-container">
+          <label>Pin 33 is: <span id="status-1">off</span></label>
           <button id="toggle-1"> Toggle</button>
         </p>
-        <p>
-          Pin 32 is: <span id="status-2">off</span>
+        <p class="input-container">
+          <label>Pin 32 is: <span id="status-2">off</span></label>
           <button id="toggle-2"> Toggle</button>
         </p>
-        <p>
-          Pin 31 is: <span id="status-3">off</span>
+        <p class="input-container">
+          <label>Pin 31 is: <span id="status-3">off</span></label>
           <button id="toggle-3"> Toggle</button>
         </p>
         <hr/>

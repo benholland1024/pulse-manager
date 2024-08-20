@@ -22,9 +22,7 @@ let SensorInput = {
   ],
   run_history: [], //  An array of arrays, each being a "current_run"
 
-  //  CONSTANTS:
-
-  //  Methods
+  //  METHODS
   // init:             SensorInput_init,
   update_flowrate:  SensorInput_update_flowrate,
   update_pressure:  SensorInput_update_pressure,
@@ -57,10 +55,10 @@ function SensorInput_get_table_rows(run) {
 }
 
 //  Called from UserInput.  Updates the pressure display + current_run
-function SensorInput_update_pressure(pressure) {
+function SensorInput_update_pressure(pressure, seconds_elapsed) {
   $('#m-pressure').text(pressure);
   SensorInput.current_run.push({
-    time: Math.round(UserInput.clock*100) / 100,
+    time: seconds_elapsed,
     vp:   pressure,
     ap:   0,
     mp:   0,

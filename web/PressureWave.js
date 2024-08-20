@@ -52,7 +52,10 @@ function PressureWave_get_ap_value(i) {
   value = Math.round(value * 1000) / 1000;
   if (value < UserInput.diastole)
     value = UserInput.diastole;
-  return value;
+  return {
+    t: new Date(i * UserInput.step_size * 1000),
+    y: value
+  };
 }
 
 //  Get left ventrical pressure
@@ -75,7 +78,10 @@ function PressureWave_get_vp_value(i) {
   value = Math.round(value * 1000) / 1000;
   if (value < 0)
     value = 0;
-  return value;
+  return {
+    t: new Date(i * UserInput.step_size * 1000),
+    y: value
+  };
 }
 
 //  Draw the waveform, with no changes
@@ -102,18 +108,24 @@ function PressureWave_start_pulse() {
 }
 
 //  Runs every few milliseconds after "start_pulse()"
-function PressureWave_pulse_step() {
+function PressureWave_pulse_step(seconds_elapsed, pressure) {
   let _this = PressureWave;
-  _this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
-  _this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
-  if (_this.pulse_i < UserInput.xValues.length - 1) {
-    _this.pulse_i++;
+  //_this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
+  //_this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
+  let hz = UserInput.bpm / 60;    //  Because b/m * 1min/60sec == b/s == hz
+  let period = 1 / hz;            //  Because period T = 1 / f
+  let elapsed = seconds_elapsed - (_this.pulse_i * period * 2);
+  if (elapsed < period * 2) {
+    _this.chart.data.datasets[0].data.push({
+      t: new Date(elapsed * 1000),
+      y:  pressure
+    });
   } else {
     _this.ap = [];
     _this.vp = [];
     _this.chart.data.datasets[0].data = _this.ap;
     _this.chart.data.datasets[1].data = _this.vp;
-    _this.pulse_i = 0;
+    _this.pulse_i++;
   }
   _this.chart.update();
 }
@@ -173,7 +185,9 @@ function PressureWave_init() {
         },
       },
       tooltips: {
-        filter: function (item) { return item.datasetIndex < 2; }
+        filter: function (item) {
+          return item.datasetIndex < 2; // Hides the dimmed lines
+        }
       },
       title: {
         display: true,
@@ -198,6 +212,14 @@ function PressureWave_init() {
           }
         }],
         xAxes: [{
+          type: 'time',
+          time: {
+            unit: 'millisecond',
+            displayFormats: {
+              millisecond: 'ss.SSS'
+            },
+            tooltipFormat: 'ss.SSS'
+          },
           scaleLabel: {
             display: true,
             labelString: 'Time (s)',

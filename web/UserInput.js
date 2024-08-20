@@ -213,18 +213,19 @@ function PulseButtons_pulse_step(ms_since_req) {
   let promise = eel.get_pulse_data();
   promise().then(function(step_data) {
     console.log(step_data);
-    if (!step_data[0]) {
-      return
+    let do_pulse = step_data[0];
+    if (!do_pulse) {
+      return;
     }
     let seconds_elapsed = step_data[1];
     let pressure = step_data[2];
     let flowrate = step_data[3];
     $('#clock').text(seconds_elapsed);
     SensorInput.update_flowrate(flowrate);
-    SensorInput.update_pressure(pressure);
+    SensorInput.update_pressure(pressure, seconds_elapsed);
     if (UserInput.show_pulse) {
-      PressureWave.pulse_step();
-      AirflowWave.pulse_step();
+      PressureWave.pulse_step(seconds_elapsed, pressure);
+      AirflowWave.pulse_step(seconds_elapsed);
     }
     //  Ensures we update @ max screen refresh rate
     requestAnimationFrame(PulseButtons_pulse_step);
@@ -383,7 +384,6 @@ let ManualControls = {
 let ShowPulseButton = {
   init: function() {
     $('#show-pulse').on("click", function() { 
-      alert("This function needs to be updated");
       UserInput.show_pulse = !UserInput.show_pulse;
     });
   }

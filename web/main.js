@@ -25,8 +25,8 @@
 
 
 //
-//   --^v--^v--  main.js : This file runs when the app loads  --^v--^v--
-//
+//       --^v--^v--  This file runs when the app loads.  --^v--^v--
+//                   It also contains the "App" object.
 
 import PressureWave from './PressureWave.js';
 import AirflowWave from './AirflowWave.js';
@@ -78,13 +78,6 @@ function boot() {
 }
 boot();
 
-
-
-//  Example of how to expose JS functions to Python (not used
-eel.expose(prompt_alerts);
-function prompt_alerts(description) {
-  alert(description);
-}
 
 
 /*

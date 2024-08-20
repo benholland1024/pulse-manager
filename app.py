@@ -5,121 +5,144 @@
 #  It contains the following sections:
 #    - Global variables
 #    - Data measurement
-#    - Valve controls
+#    - Pulse controls
 #    - Data export
 #    - Boot function
 
-import eel                  # Connects js with py
-import RPi.GPIO as GPIO     # Activates pins!
-import threading            # Creates threads that can be interrupted
-import os                   # Formats absolute filepaths
-import mcp3008              # Reads data sensors using SPI  
+import eel                    # Connects js with py
+import RPi.GPIO as GPIO       # Activates pins!
+import threading              # Creates threads that can be interrupted
+import os                     # Formats absolute filepaths
+import mcp3008                # Reads data sensors using SPI  
+import time                   # Get the current time, for pulse data
 
-eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
 
     ##############################
   ####     GLOBAL VARIABLES     ####
     ##############################
 
 pins = {  #  The three pins used, and whether they're open
-  "31": False,      # Outflow near a
-  "32": False,      # Outflow near pockets
-  "33": False       # Air inflow
+  "31": False,       # Outflow near a
+  "32": False,       # Outflow near pockets
+  "33": False        # Air inflow
 }
 
-pulse_count = 0;    # Used to detect flow rate
+do_pulse     = False # True iff the pulse is going
+secs_elapsed = 0     # Seconds since start of pulse
+pulse_count  = 0     # Used to detect flow rate
+flow_rate    = 0     # The flow rate, in L/min
+pressure     = 0     # The pressure, in mmHg
 
-save_folder = '-';   # Location to save exported data
+save_folder  = '-'  # Location to save exported data
 
     ##############################
   ####     DATA MEASUREMENT     ####
     ##############################
   
-# Constantly check the pressure sensors. Called in boot()
+# Constantly check the pressure sensors. Called in start_pulse()
 def check_pressure():
-  global do_pulse
-  while do_pulse:
-    with mcp3008.MCP3008() as adc:
-      pressureV = adc.read([mcp3008.CH0])[0]
-      pressureV = pressureV * (3.3 / 1023) # Translates to volts (max 3.3v)
-      pressureV = round(pressureV, 2)
-      pressureKPa = round(pressureV - 1, 2)
-      pressureMmHg = round(pressureKPa * 7.50062, 2)
-      eel.update_pressure(pressureMmHg)
-      
-      #flowrate = adc.read([mcp3008.CH1])[0] * (3.3 / 1023)
-      #eel.update_flowrate(flowrate)
-      _log = "Pressure: " + str(pressureV) + "V, "
-      _log += str(pressureKPa) + "kPa, "
-      _log += str(pressureMmHg) + "mmHg"
-      print(_log)
-    eel.sleep(.1)
+  global pressure
+  with mcp3008.MCP3008() as adc:
+    pressureV = adc.read([mcp3008.CH0])[0]
+    pressureV = pressureV * (3.3 / 1023) # Translates to volts (max 3.3v)
+    pressureV = round(pressureV, 2)
+    pressureKPa = round(pressureV - 1, 2)
+    pressureMmHg = round(pressureKPa * 7.50062, 2)
+    pressure = pressureMmHg
+    return pressureMmHg
+    
   
-# Fires when the flow meter moves 1 rotation.  Called in boot()
+# Fires when the flow meter moves 1 rotation.  Called in start_pulse()
 def detect_flow_pulse(channel):
   global pulse_count
-  pulse_count += 1;
+  pulse_count += 1
   #print('Flow pulse ' + str(pulse_count) + ' detected!')
 
 # Runs every 1 second.
 def check_flow_rate():
   global pulse_count
-  global do_pulse
-  while do_pulse:
-    liters_per_min = pulse_count / 7.5;
-    eel.update_flowrate(liters_per_min)
-    #print(str(liters_per_min) + " L/min")
-    pulse_count = 0;
-    eel.sleep(1)
-    
+  global flow_rate
+  liters_per_min = pulse_count / 7.5
+  flow_rate = liters_per_min
+  pulse_count = 0
 
     ##############################
-  ####      VALVE CONTROLS      ####
+  ####      PULSE CONTROLS      ####
     ##############################
 
 # Used in other functions to turn pins on/off by pin #, & record status
 def set_pin(pin_num, turn_on):
-  pins[pin_num] = turn_on; # turn_on can be True or False
-  GPIO.output(int(pin_num), turn_on);
+  pins[pin_num] = turn_on  # turn_on can be True or False
+  GPIO.output(int(pin_num), turn_on)
+  
+# Used in start_pulse(). Gets a wave period from a bpm
+def get_period(bpm):
+  hz = round(int(bpm) / 60, 2)
+  period = round(1 / hz, 2)
+  return period
 
-#
-#   The functions below are accessible in the JS!
-#
+### The functions below are accessible in the JS!
 
 #  Manually toggles specific GPIO lines
 @eel.expose
 def toggle_pin(pin_num):
-  set_pin(pin_num, not pins[pin_num]);
+  set_pin(pin_num, not pins[pin_num])
   print("Toggled pin " + pin_num + " to " + ('on' if pins[pin_num] else 'off'))
 
 #  Starts the pulse at a specific bpm / period
 @eel.expose
-def start_pulse(bpm):
+def start_pulse(bpm, step_size):
   global do_pulse
   do_pulse = True
-  eel.spawn(check_pressure)
-  eel.spawn(check_flow_rate)
+  period = get_period(bpm)
   
-  def pulse(bpm):
-    hz = round(int(bpm) / 60, 2)
-    period = round(1 / hz, 2)
-    print(period)
-    timer = 0
+  def pulse(period):  # Starts an infinite loop. It's called below
+    global secs_elapsed
     period_count = 0
     inflow = True
+    start_seconds = round(time.time() * 1000) / 1000
+    secs_elapsed = 0
+    print(start_seconds)
     while do_pulse:
+      
+      #  Toggle airflow valves
       set_pin(33, inflow)
       set_pin(32, not inflow)
       set_pin(31, not inflow)
-      eel.pulse_step(timer)     # Calls a JS function in UserInput.js
-      timer += 0.025
-      period_count += 0.025
-      if (period_count >= round(period/2,2)):
-        period_count -= round(period/2,2)
-        inflow = not inflow;
-      eel.sleep(0.025)
       
-  eel.spawn(pulse, bpm)
+      #  Get pressure & flowrate
+      pressureMmHg = check_pressure()
+      lit_per_min  = check_flow_rate()
+      
+      #  Calculate timing
+      previous_elapsed = secs_elapsed
+      secs_elapsed = round(time.time() * 1000) / 1000
+      secs_elapsed -= start_seconds
+      secs_elapsed = round(secs_elapsed * 1000) / 1000
+      sec_dif = secs_elapsed - previous_elapsed
+      sec_dif = round(sec_dif*1000) / 1000
+      _log = "Pulse time: " + str(sec_dif) + ", "
+      _log += "Total elapsed time: " + str(secs_elapsed) + ", "
+      _log += "Pressure: " + str(pressureMmHg) + ", "
+      # print(_log)
+      
+      period_count += sec_dif
+      if (period_count >= round(period/2,2)): # Time to toggle valves?
+        period_count -= round(period/2,2)
+        inflow = not inflow
+      
+      eel.sleep(step_size)  #  Wait, then continue loop
+      
+  eel.spawn(pulse, period) # Call pulse() in its own thread
+  
+#  Get the current time, pressure, and flow rate. Called in UserInput.js
+@eel.expose
+def get_pulse_data():
+  global do_pulse
+  global secs_elapsed
+  global pressure
+  global flow_rate
+  return [do_pulse, secs_elapsed, pressure, flow_rate]
     
 #  Stops the pulse
 @eel.expose
@@ -127,8 +150,8 @@ def stop_pulse():
   global do_pulse
   do_pulse = False
   set_pin(33, False)
-  set_pin(32, True);
-  set_pin(31, True);
+  set_pin(32, True)
+  set_pin(31, True)
   eel.reset_clock()  # Calls a JS function in UserInput.js
   
     ##############################
@@ -157,20 +180,20 @@ def set_save_folder(new_location):
 def export(data, datatype):
   global save_folder
   if (save_folder == '-'):
-    return;
+    return
   
   ext = '.csv' # if datatype == 'csv' else '.png'
 
   files = os.listdir(save_folder)
-  new_file_name = 'data';
-  unique_name = False;
-  i = 0;
+  new_file_name = 'data'
+  unique_name = False
+  i = 0
   while (not unique_name):
-    i += 1;
-    unique_name = True;
+    i += 1
+    unique_name = True
     for _file in files:
       if (_file == 'data' + str(i) + ext):
-        unique_name = False;
+        unique_name = False
   file = open(save_folder + '/data' + str(i) + ext, 'w')
   file.write(data)
   file.close()
@@ -189,6 +212,10 @@ def on_close(url, open_websockets):
     
 #  This fires when the program first runs.
 def boot():
+  
+  #  This opens the HTML file representing the app, in web/index.html
+  eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
+  
   GPIO.setwarnings(False)
   GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)
   GPIO.setup(33, GPIO.OUT)

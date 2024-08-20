@@ -40,7 +40,6 @@ let UserInput = {
 
   //  INDIRECTLY CONTROLLABLE:
   xValues:       [],         //  A list of each x value plotted
-  clock:         0,
 
   //  CONSTANTS:
   step_size:     0.025,      //  The interval between graph points
@@ -186,7 +185,7 @@ let PulseButtons = {
   stop_pulse:   PulseButtons_stop_pulse,
   pulse_step:   PulseButtons_pulse_step
 }
-
+//  Start the pulse!
 function PulseButtons_start_pulse() {
   $('#stop-pulse').css('display', 'block');
   $('#start-pulse').css('display', 'none');
@@ -195,8 +194,10 @@ function PulseButtons_start_pulse() {
     AirflowWave.start_pulse();
   }
   SensorInput.new_run();
-  eel.start_pulse(UserInput.bpm);
+  eel.start_pulse(UserInput.bpm, UserInput.step_size);
+  requestAnimationFrame(PulseButtons_pulse_step);
 }
+//  Stop the pulse!
 function PulseButtons_stop_pulse() {
   $('#stop-pulse').css('display', 'none');
   $('#start-pulse').css('display', 'block');
@@ -207,19 +208,29 @@ function PulseButtons_stop_pulse() {
   $('#run-selector').val(SensorInput.run_history.length + 1);
   eel.stop_pulse();
 }
-function PulseButtons_pulse_step() {
-  UserInput.clock += UserInput.step_size;
-  $('#clock').text(Math.round(UserInput.clock*100)/100);
-  if (UserInput.show_pulse) {
-    PressureWave.pulse_step();
-    AirflowWave.pulse_step();
-  }
+//  This updates the displayed timer, pressure, flowrate + graph.
+function PulseButtons_pulse_step(ms_since_req) {
+  let promise = eel.get_pulse_data();
+  promise().then(function(step_data) {
+    console.log(step_data);
+    if (!step_data[0]) {
+      return
+    }
+    let seconds_elapsed = step_data[1];
+    let pressure = step_data[2];
+    let flowrate = step_data[3];
+    $('#clock').text(seconds_elapsed);
+    SensorInput.update_flowrate(flowrate);
+    SensorInput.update_pressure(pressure);
+    if (UserInput.show_pulse) {
+      PressureWave.pulse_step();
+      AirflowWave.pulse_step();
+    }
+    //  Ensures we update @ max screen refresh rate
+    requestAnimationFrame(PulseButtons_pulse_step);
+  });
 }
-//  How to expose JS functions to Python 
-eel.expose(pulse_step);
-function pulse_step(time) {
-  PulseButtons.pulse_step()
-}
+//  Reset the clock, called in python. 
 eel.expose(reset_clock);
 function reset_clock() {
   UserInput.clock = 0;
@@ -339,7 +350,7 @@ function Export_get_CSV_data() {
     str += line + '\n';
   }
   
-  return str
+  return str;
 }
 
 
@@ -372,6 +383,7 @@ let ManualControls = {
 let ShowPulseButton = {
   init: function() {
     $('#show-pulse').on("click", function() { 
+      alert("This function needs to be updated");
       UserInput.show_pulse = !UserInput.show_pulse;
     });
   }

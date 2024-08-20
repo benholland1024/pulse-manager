@@ -26,6 +26,8 @@ let SensorInput = {
 
   //  Methods
   // init:             SensorInput_init,
+  update_flowrate:  SensorInput_update_flowrate,
+  update_pressure:  SensorInput_update_pressure,
   get_table_rows:   SensorInput_get_table_rows,
   new_run:          SensorInput_new_run
 }
@@ -54,9 +56,8 @@ function SensorInput_get_table_rows(run) {
   return html;
 }
 
-//  Called from Python!  Updates the pressure display + current_run
-eel.expose(update_pressure);
-function update_pressure(pressure) {
+//  Called from UserInput.  Updates the pressure display + current_run
+function SensorInput_update_pressure(pressure) {
   $('#m-pressure').text(pressure);
   SensorInput.current_run.push({
     time: Math.round(UserInput.clock*100) / 100,
@@ -69,16 +70,16 @@ function update_pressure(pressure) {
   $('#data-table table').html(SensorInput.get_table_rows(SensorInput.current_run));
 }
 
-//  Called from Python!  Updates the pressure display + flow_rate
-eel.expose(update_flowrate);
-function update_flowrate(flowrate) {
+//  Called from UserInput. Updates the pressure display + flow_rate
+function SensorInput_update_flowrate(flowrate) {
   $('#m-flowrate').text(flowrate);
   console.log(`New flowrate: ${flowrate}`)
 }
 
+//  Starts recording a new set of data
 function SensorInput_new_run() {
   if (this.current_run.length != 0) {
-    //  This is a hacky way to copy an object, instead of referencing it
+    //  This copies an object, instead of referencing it
     this.run_history.push(JSON.parse(JSON.stringify(this.current_run)));
     this.current_run = [];
   }

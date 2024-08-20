@@ -3,6 +3,7 @@
 #  This file starts the user interface and controls the circuitry.
 #
 #  It contains the following sections:
+#    - Classes
 #    - Global variables
 #    - Data measurement
 #    - Pulse controls
@@ -18,6 +19,25 @@ import time                   # Get the current time, for pulse data
 
 
     ##############################
+  ####          CLASSES         ####
+    ##############################
+    
+class PulseDatapoint:
+  def __init__(self, time, AP, VP, flowrate):
+    self.time = time
+    self.AP = AP
+    self.VP = VP
+    self.flowrate = flowrate
+    self.json = '{ "time": ' + str(self.time) + ', '
+    self.json += '"pressure": ' + str(self.AP) + ', '
+    self.json += '"flowrate": ' + str(self.flowrate) + ' }'
+  def __repr__(self):
+    return self.json
+  def __str__(self):
+    return self.json
+
+      
+    ##############################
   ####     GLOBAL VARIABLES     ####
     ##############################
 
@@ -27,13 +47,15 @@ pins = {  #  The three pins used, and whether they're open
   "33": False        # Air inflow
 }
 
+datapoints   = []    # A list of all datapoints, to be sent to JS.
+
 do_pulse     = False # True iff the pulse is going
 secs_elapsed = 0     # Seconds since start of pulse
 pulse_count  = 0     # Used to detect flow rate
-flow_rate    = 0     # The flow rate, in L/min
-pressure     = 0     # The pressure, in mmHg
+flow_rate    = 0     # The current flow rate, in L/min
+pressure     = 0     # The current pressure, in mmHg
 
-save_folder  = '-'  # Location to save exported data
+save_folder  = '-'   # Location to save exported data
 
     ##############################
   ####     DATA MEASUREMENT     ####
@@ -102,7 +124,6 @@ def start_pulse(bpm, step_size):
     inflow = True
     start_seconds = round(time.time() * 1000) / 1000
     secs_elapsed = 0
-    print(start_seconds)
     while do_pulse:
       
       #  Toggle airflow valves
@@ -126,8 +147,12 @@ def start_pulse(bpm, step_size):
       _log += "Pressure: " + str(pressureMmHg) + ", "
       # print(_log)
       
+      # Log datapoint
+      datapoints.append(PulseDatapoint(secs_elapsed, pressure, 0, flow_rate).json)
+      
+      # Check if it's time to toggle the air valves
       period_count += sec_dif
-      if (period_count >= round(period/2,2)): # Time to toggle valves?
+      if (period_count >= round(period/2,2)):
         period_count -= round(period/2,2)
         inflow = not inflow
       
@@ -137,12 +162,13 @@ def start_pulse(bpm, step_size):
   
 #  Get the current time, pressure, and flow rate. Called in UserInput.js
 @eel.expose
-def get_pulse_data():
+def get_pulse_data(bpm):
   global do_pulse
-  global secs_elapsed
-  global pressure
-  global flow_rate
-  return [do_pulse, secs_elapsed, pressure, flow_rate]
+  global datapoints
+  #period = get_period(bpm)   TODO: Use this to save overflow datapoints
+  data_to_send = datapoints.copy()
+  datapoints = []
+  return [do_pulse, secs_elapsed, pressure, flow_rate, data_to_send]
     
 #  Stops the pulse
 @eel.expose

@@ -78,7 +78,6 @@ function AirflowWave_start_pulse() {
 //  Runs every few milliseconds after "start_pulse()"
 function AirflowWave_pulse_step() {
   let _this = AirflowWave;
-  console.log(_this.chart.data.datasets);
   _this.chart.data.datasets[0].data.push( _this.get_inflow_value( _this.pulse_i ) );
   if (_this.pulse_i < UserInput.xValues.length - 1) {
     _this.pulse_i++;

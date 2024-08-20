@@ -108,7 +108,7 @@ function PressureWave_start_pulse() {
 }
 
 //  Runs every few milliseconds after "start_pulse()"
-function PressureWave_pulse_step(seconds_elapsed, pressure) {
+function PressureWave_pulse_step(seconds_elapsed, datapoints) {
   let _this = PressureWave;
   //_this.chart.data.datasets[0].data.push( _this.get_ap_value( _this.pulse_i ) );
   //_this.chart.data.datasets[1].data.push( _this.get_vp_value( _this.pulse_i ) );
@@ -116,10 +116,18 @@ function PressureWave_pulse_step(seconds_elapsed, pressure) {
   let period = 1 / hz;            //  Because period T = 1 / f
   let elapsed = seconds_elapsed - (_this.pulse_i * period * 2);
   if (elapsed < period * 2) {
-    _this.chart.data.datasets[0].data.push({
-      t: new Date(elapsed * 1000),
-      y:  pressure
-    });
+    for (let i = 0; i < datapoints.length; i++) {
+      let datapoint = JSON.parse(datapoints[i]);
+      let d_elapsed = datapoint.time - (_this.pulse_i * period * 2);
+      if (d_elapsed >= period * 2) {
+        break;
+      }
+      _this.chart.data.datasets[0].data.push({
+        t: new Date(d_elapsed * 1000),
+        y: datapoint.pressure
+      });
+    }
+    
   } else {
     _this.ap = [];
     _this.vp = [];

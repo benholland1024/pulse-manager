@@ -71,7 +71,6 @@ function SensorInput_update_pressure(pressure, seconds_elapsed) {
 //  Called from UserInput. Updates the pressure display + flow_rate
 function SensorInput_update_flowrate(flowrate) {
   $('#m-flowrate').text(flowrate);
-  console.log(`New flowrate: ${flowrate}`)
 }
 
 //  Starts recording a new set of data

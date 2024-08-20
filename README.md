@@ -1,5 +1,6 @@
 # Pulse Manager 🫀
 This is software to control a pulse duplicator using a Raspberry Pi.  
+A description of the relevant hardware is [here](https://github.com/benholland1024/pulse-manager-tutorial).
 
 ## Setup 
 This project requires Python, and python packages [eel](https://github.com/python-eel/Eel?tab=readme-ov-file#eel) and [gpiozero](https://gpiozero.readthedocs.io/en/stable/installing.html) to be installed on the RPi.  

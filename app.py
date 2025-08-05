@@ -44,7 +44,7 @@ class PulseDatapoint:
 pins = {  #  The three pins used, and whether they're open
   "31": False,       # Outflow near a
   "32": False,       # Outflow near pockets
-  "33": False        # Air inflow
+  "33": False,       # Air inflow
 }
 
 datapoints   = []    # A list of all datapoints, to be sent to JS.
@@ -54,24 +54,61 @@ secs_elapsed = 0     # Seconds since start of pulse
 pulse_count  = 0     # Used to detect flow rate
 flow_rate    = 0     # The current flow rate, in L/min
 pressure     = 0     # The current pressure, in mmHg
+pressure_1   = 0
+pressure_2   = 0
 
 save_folder  = '-'   # Location to save exported data
 
     ##############################
   ####     DATA MEASUREMENT     ####
     ##############################
-  
-# Constantly check the pressure sensors. Called in start_pulse()
+
 def check_pressure():
   global pressure
+  global pressure_1
+  global pressure_2
+  
   with mcp3008.MCP3008() as adc:
     pressureV = adc.read([mcp3008.CH0])[0]
-    pressureV = pressureV * (3.3 / 1023) # Translates to volts (max 3.3v)
-    pressureV = round(pressureV, 2)
-    pressureKPa = round(pressureV - 1, 2)
-    pressureMmHg = round(pressureKPa * 7.50062, 2)
+    #pressureV2 = adc.read([mcp3008.CH2])[0]
+    pressureV = (pressureV * (3.3 / 1023))-2.513 # Translates to volts (max 3.3v). This is an SPI thing
+    #print("Volts 0: " + str(pressureV0));
+    print("Volts 1: " + str(pressureV));
+    #print("Volts 2: " + str(pressureV2));
+    pressureV = round(pressureV, 5)
+    print("Volts 1 rounded: " + str(pressureV));
+    pressurePSI = round(pressureV * 5 / 3.3, 5)
+    pressureMmHg = round(pressurePSI * 51.715, 2)
+    print("1 mmHg: " + str(pressureMmHg));
     pressure = pressureMmHg
-    return pressureMmHg
+    
+    pressureV = adc.read([mcp3008.CH1])[0]
+    pressureV = (pressureV * (3.3 / 1023))-2.513
+    print("Volts 2: " + str(pressureV));
+    pressureV = round(pressureV, 5)
+    print("Volts 2 rounded: " + str(pressureV));
+    pressurePSI = round(pressureV * 5 / 3.3, 5)
+    pressureMmHg_1 = round(pressurePSI * 51.715, 2)
+    print("1 mmHg: " + str(pressureMmHg_1));
+    pressure_1 = pressureMmHg_1
+    
+    pressureV = adc.read([mcp3008.CH2])[0]
+    pressureV = (pressureV * (3.3 / 1023))-2.513
+    print("Volts 3: " + str(pressureV));
+    pressureV = round(pressureV, 5)
+    print("Volts 3 rounded: " + str(pressureV));
+    pressurePSI = round(pressureV * 5 / 3.3, 5)
+    pressureMmHg_2 = round(pressurePSI * 51.715, 2)
+    print("1 mmHg: " + str(pressureMmHg_2));
+    pressure_2 = pressureMmHg_2
+    
+    print("Logging the pressure: " + str(pressure));
+    print("Logging the pressure 2: " + str(pressure_1));
+    print("Logging the pressure 3: " + str(pressure_2));
+  
+
+	
+	
     
   
 # Fires when the flow meter moves 1 rotation.  Called in start_pulse()
@@ -84,9 +121,10 @@ def detect_flow_pulse(channel):
 def check_flow_rate():
   global pulse_count
   global flow_rate
-  liters_per_min = pulse_count / 7.5
+  liters_per_min = round(pulse_count / 7.5, 4)
   flow_rate = liters_per_min
   pulse_count = 0
+  print("Flow rate: " + str(liters_per_min))
 
     ##############################
   ####      PULSE CONTROLS      ####
@@ -132,7 +170,7 @@ def start_pulse(bpm, step_size):
       set_pin(31, not inflow)
       
       #  Get pressure & flowrate
-      pressureMmHg = check_pressure()
+      check_pressure()
       lit_per_min  = check_flow_rate()
       
       #  Calculate timing
@@ -144,7 +182,6 @@ def start_pulse(bpm, step_size):
       sec_dif = round(sec_dif*1000) / 1000
       _log = "Pulse time: " + str(sec_dif) + ", "
       _log += "Total elapsed time: " + str(secs_elapsed) + ", "
-      _log += "Pressure: " + str(pressureMmHg) + ", "
       # print(_log)
       
       # Log datapoint
@@ -168,7 +205,7 @@ def get_pulse_data(bpm):
   #period = get_period(bpm)   TODO: Use this to save overflow datapoints
   data_to_send = datapoints.copy()
   datapoints = []
-  return [do_pulse, secs_elapsed, pressure, flow_rate, data_to_send]
+  return [do_pulse, secs_elapsed, pressure, pressure_1, pressure_2, flow_rate, data_to_send]
     
 #  Stops the pulse
 @eel.expose
@@ -178,6 +215,7 @@ def stop_pulse():
   set_pin(33, False)
   set_pin(32, True)
   set_pin(31, True)
+  flow_rate = 0
   eel.reset_clock()  # Calls a JS function in UserInput.js
   
     ##############################
@@ -188,6 +226,8 @@ def stop_pulse():
 @eel.expose
 def find_usb_drives():
   username = os.getlogin()
+  if (not os.path.isdir('/media/' + username)):
+    return []
   usb_directories = os.listdir('/media/' + username)
   for i, directory in enumerate(usb_directories):
     usb_directories[i] = '/media/' + username + '/' + directory
@@ -240,7 +280,7 @@ def on_close(url, open_websockets):
 def boot():
   
   #  This opens the HTML file representing the app, in web/index.html
-  eel.init(os.path.abspath('/home/benholland/github.com/pulse-manager/web'))
+  eel.init(os.path.abspath('/home/benholland/github/pulse-manager/web'))
   
   GPIO.setwarnings(False)
   GPIO.setmode(GPIO.BOARD)                    # Use gpio pin #'s (other choice: GPIO.BOARD)

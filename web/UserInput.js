@@ -42,7 +42,7 @@ let UserInput = {
   xValues:       [],         //  A list of each x value plotted
 
   //  CONSTANTS:
-  step_size:     0.025,      //  The interval between graph points
+  step_size:     0.25,      //  The interval between graph points
   label_step:    0.5,        //  Which x labels should be shown? (Must be a multiple of step_size)
 
   //  Methods
@@ -216,13 +216,20 @@ function PulseButtons_pulse_step(ms_since_req) {
     if (!do_pulse) {
       return;
     }
+    let last_time_index = SensorInput.current_run.length - 1;
+    if (last_time_index >= 0 && SensorInput.current_run[last_time_index].time == step_data[1]) {
+		requestAnimationFrame(PulseButtons_pulse_step);
+		return;
+	}
     let seconds_elapsed = step_data[1];
     let pressure        = step_data[2];
-    let flowrate        = step_data[3];
-    let datapoints      = step_data[4];
+    let pressure_1      = step_data[3];
+    let pressure_2      = step_data[4];
+    let flowrate        = step_data[5];
+    let datapoints      = step_data[6];
     $('#clock').text(seconds_elapsed);
     SensorInput.update_flowrate(flowrate);
-    SensorInput.update_pressure(pressure, seconds_elapsed);
+    SensorInput.update_pressure(pressure, pressure_1, pressure_2, flowrate, seconds_elapsed);
     if (UserInput.show_pulse) {
       PressureWave.pulse_step(seconds_elapsed, datapoints);
       AirflowWave.pulse_step(seconds_elapsed);

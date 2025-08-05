@@ -55,14 +55,16 @@ function SensorInput_get_table_rows(run) {
 }
 
 //  Called from UserInput.  Updates the pressure display + current_run
-function SensorInput_update_pressure(pressure, seconds_elapsed) {
-  $('#m-pressure').text(pressure);
+function SensorInput_update_pressure(pressure, pressure_1, pressure_2, flowrate, seconds_elapsed) {
+  $('#v-pressure').text(pressure);
+  $('#a-pressure').text(pressure_1);
+  $('#m-pressure').text(pressure_2);
   SensorInput.current_run.push({
     time: seconds_elapsed,
     vp:   pressure,
-    ap:   0,
-    mp:   0,
-    bloodflow: 0,
+    ap:   pressure_1,
+    mp:   pressure_2,
+    bloodflow: flowrate,
     airflow:   0
   });
   $('#data-table table').html(SensorInput.get_table_rows(SensorInput.current_run));
